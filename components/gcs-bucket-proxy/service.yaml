@@ -1,0 +1,29 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: gcs-bucket-proxy-backend-config
+spec:
+  cdn:
+    enabled: true
+    cachePolicy:
+      includeHost: true
+      includeProtocol: true
+      includeQueryString: true
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gcs-bucket-proxy
+  annotations:
+    cloud.google.com/backend-config: >
+      {"ports": {"80": "gcs-bucket-proxy-backend-config"}}
+spec:
+  type: NodePort
+  selector:
+    app: gcs-bucket-proxy
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80

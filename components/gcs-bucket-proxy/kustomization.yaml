@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+- config.yaml
+- deployment.yaml
+- service.yaml
+
+patches:
+- target:
+    kind: Deployment
+    labelSelector: app=gcs-bucket-proxy
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/env
+      value:
+      - name: BUCKET_NAME
+        value: bucket-name
