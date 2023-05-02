@@ -14,6 +14,7 @@ spec:
           labels:
             app: nightwatch
         spec:
+          serviceAccountName: baseproject
           containers:
             - name: nightwatch
               image: nightwatch
