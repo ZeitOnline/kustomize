@@ -24,7 +24,6 @@ spec:
               - "pytest"
               - "--tb=native"
               - "--verbose"
-              - "--browser-channel=chromium"
               - "--prometheus"
               - "--prometheus-pushgateway-url=http://pushgateway.cluster-infra.svc.cluster.local:9091/"
               args:
