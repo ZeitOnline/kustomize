@@ -26,6 +26,7 @@ spec:
               - "--verbose"
               - "--prometheus"
               - "--prometheus-pushgateway-url=http://pushgateway.cluster-infra.svc.cluster.local:9091/"
+              - "> /tmp/$(date +'%Y-%m-%d_%I-%M')_nightwatch.log"
               args:
               - "--nightwatch-environment=staging"
           restartPolicy: Never
