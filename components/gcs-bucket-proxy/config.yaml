@@ -6,8 +6,9 @@ data:
   default.conf.template: |
     server {
       listen 80 default_server;
-      access_log off;
       error_log /dev/stdout;
+      gzip on;
+      gzip_types text/plain text/html text/css text/csv text/tsv application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml image/svg;
       location / {
         rewrite ^(.*)/$ $1/index.html break;
         proxy_set_header Upgrade $http_upgrade;
