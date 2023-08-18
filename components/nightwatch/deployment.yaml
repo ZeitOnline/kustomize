@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nightwatch-helpers
+data:
+  run.sh: |
+    while true
+    do
+      $@
+      sleep 4m
+    done
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nightwatch
+spec:
+  selector:
+    matchLabels:
+      app: nightwatch
+  template:
+    metadata:
+      labels:
+        app: nightwatch
+    spec:
+      serviceAccountName: baseproject
+      containers:
+        - name: nightwatch
+          image: nightwatch
+          command:
+          - "/helpers/run.sh"
+          - "pipenv"
+          - "run"
+          - "pytest"
+          - "--tb=native"
+          - "--verbose"
+          - "--prometheus"
+          - "--prometheus-pushgateway-url=http://pushgateway.cluster-infra.svc.cluster.local:9091/"
+          args:
+          - "--nightwatch-environment=staging"
+          volumeMounts:
+          - name: nightwatch-helpers
+            mountPath: /helpers
+            readOnly: true
+      volumes:
+      - name: nightwatch-helpers
+        configMap:
+          name: nightwatch-helpers

@@ -1,6 +1,6 @@
-## 'nightwatch' cronjob component
+## 'nightwatch' runner component
 
-This component can be used to define a 'nightwatch' cronjob running in Kubernetes, for example with a ``nightwatch/kustomization.yaml`` file like this:
+This component can be used to define a 'nightwatch' deployment running in Kubernetes, for example with a ``nightwatch/kustomization.yaml`` file like this:
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
@@ -15,11 +15,11 @@ images:
 
 patches:
 - target:
-    kind: CronJob
+    kind: Deployment
     name: nightwatch
   patch: |-
     - op: replace
-      path: /spec/jobTemplate/spec/template/spec/containers/0/args
+      path: /spec/template/spec/containers/0/args
       value:
         - "--nightwatch-environment=production"
 ```
