@@ -30,6 +30,7 @@ spec:
         - name: nightwatch
           image: nightwatch
           command:
+          - "bash"
           - "/helpers/run.sh"
           - "pipenv"
           - "run"
