@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: testrunner
+spec:
+  backoffLimit: 0       # no retries please
+  template:
+    spec:
+      containers:
+        - name: testrunner
+          image: testrunner
+          envFrom:
+          - configMapRef:
+              name: global-config
+      restartPolicy: Never
