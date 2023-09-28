@@ -1,0 +1,16 @@
+- op: add
+  path: /spec/template/spec/serviceAccountName
+  value: baseproject
+- op: add
+  path: /spec/template/spec/containers/0/volumeMounts/-
+  value:
+    name: pg-service
+    mountPath: "/vault/secrets/pg"
+    readOnly: true
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: pg-service
+    secret:
+      secretName: pg-service  # provided by tf:cloudsql_credentials
+      defaultMode: 0600

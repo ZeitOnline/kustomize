@@ -1,0 +1,30 @@
+# this layer makes sure all database clients have their
+# service definition file set up correctly by the vault
+# agent injector
+
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+patches:
+- path: deployment.yaml
+  target:
+    kind: Deployment
+    labelSelector: pg-services=required
+- path: deployment.yaml
+  target:
+    kind: Job
+    labelSelector: pg-services=required
+- path: cronjob.yaml
+  target:
+    kind: CronJob
+    labelSelector: pg-services=required
+- target:
+    kind: Deployment
+    labelSelector: pg-services-init=required
+  patch: |-
+    - op: add
+      path: /spec/template/spec/initContainers/0/volumeMounts
+      value:
+        - name: pg-service
+          mountPath: "/vault/secrets/pg"
+          readOnly: true
