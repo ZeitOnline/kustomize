@@ -24,6 +24,8 @@ spec:
     metadata:
       labels:
         app: nightwatch
+      annotations:
+        fluentbit.io/parser: zon-json-iso8601
     spec:
       serviceAccountName: baseproject
       containers:
@@ -39,6 +41,7 @@ spec:
           - "--verbose"
           - "--prometheus"
           - "--prometheus-pushgateway-url=http://pushgateway.cluster-infra.svc.cluster.local:9091/"
+          - "--json-report=-"
           args:
           - "--nightwatch-environment=staging"
           volumeMounts:
