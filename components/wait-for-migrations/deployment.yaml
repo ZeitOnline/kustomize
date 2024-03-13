@@ -1,0 +1,26 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wait-for-migrations
+  labels:
+    pg-services-init: required
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: wait-for-migrations
+          image: migrator
+          command:
+            - "pipenv"
+            - "run"
+            - "sh"
+            - "/helpers/wait.sh"
+          volumeMounts:
+          - name: wait-for-migrations
+            mountPath: /helpers
+            readOnly: true
+      volumes:
+      - name: wait-for-migrations
+        configMap:
+          name: wait-for-migrations

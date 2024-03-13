@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+- helpers.yaml
+
+patches:
+- target:
+    kind: Deployment
+    labelSelector: wait-for-migrations=required
+  path: deployment.yaml
+- target:
+    kind: Deployment
+    labelSelector: wait-for-migrations=required
+  patch: |-
+    - op: copy
+      from: /spec/template/spec/containers/0/envFrom
+      path: /spec/template/spec/initContainers/0/envFrom

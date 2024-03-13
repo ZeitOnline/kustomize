@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wait-for-migrations
+data:
+  wait.sh: |
+    set -e
+    while [ -z "$( alembic current | grep -F '(head)' )" ]
+    do
+        echo waiting for migrations to finish...
+        sleep 10
+    done
