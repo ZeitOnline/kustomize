@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pg-service-config
+data:
+  PGSERVICEFILE: /vault/secrets/pg/services
+  PGSERVICE: db

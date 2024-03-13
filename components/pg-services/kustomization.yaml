@@ -6,6 +6,10 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
 patches:
+- path: config.yaml
+  target:
+    kind: ConfigMap
+    labelSelector: pg-services=required
 - path: deployment.yaml
   target:
     kind: Deployment
@@ -23,8 +27,8 @@ patches:
     labelSelector: pg-services-init=required
   patch: |-
     - op: add
-      path: /spec/template/spec/initContainers/0/volumeMounts
+      path: /spec/template/spec/initContainers/0/volumeMounts/-
       value:
-        - name: pg-service
-          mountPath: "/vault/secrets/pg"
-          readOnly: true
+        name: pg-service
+        mountPath: "/vault/secrets/pg"
+        readOnly: true
