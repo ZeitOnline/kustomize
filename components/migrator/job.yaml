@@ -1,0 +1,25 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrator
+  labels:
+    app: migrator
+    pg-services: required
+    kustomize.toolkit.fluxcd.io/force: enabled
+spec:
+  backoffLimit: 0       # no retries please
+  template:
+    metadata:
+      labels:
+        app: migrator
+    spec:
+      containers:
+        - name: migrator
+          image: migrator
+          envFrom:
+          - configMapRef:
+              name: migrator-config
+          volumeMounts: []
+      volumes: []
+      restartPolicy: Never
