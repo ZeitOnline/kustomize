@@ -11,5 +11,6 @@ spec:
           image: testrunner
           envFrom:
           - configMapRef:
-              name: global-config
+              name: testrunner-config
+              optional: true
       restartPolicy: Never
