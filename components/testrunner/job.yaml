@@ -2,6 +2,8 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: testrunner
+  labels:
+    pg-services: required
 spec:
   backoffLimit: 0       # no retries please
   template:
@@ -13,4 +15,6 @@ spec:
           - configMapRef:
               name: testrunner-config
               optional: true
+          volumeMounts: []
+      volumes: []
       restartPolicy: Never
