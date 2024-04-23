@@ -19,7 +19,7 @@ metadata:
     cloud.google.com/backend-config: >
       {"ports": {"80": "gcs-bucket-proxy-backend-config"}}
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: gcs-bucket-proxy
   ports:
