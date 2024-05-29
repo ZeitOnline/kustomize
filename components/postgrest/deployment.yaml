@@ -8,8 +8,13 @@ metadata:
     pg-services: required
     wait-for-migrations: required
 spec:
+  selector:
+    matchLabels:
+      app: postgrest
   template:
     metadata:
+      labels:
+        app: postgrest
       annotations:
         fluentbit.io/parser-postgrest: postgrest
     spec:
