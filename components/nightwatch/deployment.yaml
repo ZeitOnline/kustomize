@@ -26,6 +26,7 @@ spec:
         app: nightwatch
       annotations:
         fluentbit.io/parser: zon-json-iso8601
+        reloader.stakater.com/auto: "true"
     spec:
       serviceAccountName: baseproject
       containers:
@@ -48,6 +49,10 @@ spec:
           - name: nightwatch-helpers
             mountPath: /helpers
             readOnly: true
+          envFrom:
+          - secretRef:
+              name: external-secrets
+              optional: true
       volumes:
       - name: nightwatch-helpers
         configMap:
