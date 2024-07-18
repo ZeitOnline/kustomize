@@ -51,7 +51,7 @@ spec:
             readOnly: true
           envFrom:
           - secretRef:
-              name: external-secrets
+              name: nightwatch-secrets
               optional: true
       volumes:
       - name: nightwatch-helpers
