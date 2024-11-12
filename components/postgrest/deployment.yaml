@@ -29,5 +29,6 @@ spec:
               memory: 100M
           securityContext:
             runAsUser: 0        # must be able to read the certs
+          env: []
           volumeMounts: []
       volumes: []
