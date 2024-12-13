@@ -49,6 +49,11 @@ spec:
           - name: nightwatch-helpers
             mountPath: /helpers
             readOnly: true
+          env:
+          - name: NIGHTWATCH_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
           envFrom:
           - secretRef:
               name: nightwatch-secrets
