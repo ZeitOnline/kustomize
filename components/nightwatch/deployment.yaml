@@ -44,12 +44,14 @@ spec:
           - "--prometheus-pushgateway-url=http://pushgateway.cluster-infra.svc.cluster.local:9091/"
           - "--json-report=-"
           args:
-          - "--nightwatch-environment=staging"
+          - "--nightwatch-environment=$NIGHTWATCH_ENVIRONMENT"
           volumeMounts:
           - name: nightwatch-helpers
             mountPath: /helpers
             readOnly: true
           env:
+          - name: NIGHTWATCH_ENVIRONMENT
+            value: staging
           - name: NIGHTWATCH_NAMESPACE
             valueFrom:
               fieldRef:
