@@ -17,12 +17,12 @@ data:
   start.sh: |
     #!/bin/bash
     set -o errexit -o xtrace
-    trap 'sleep 1h' ERR
+    trap 'sleep 1h' err
+    trap 'pgcopydb stream cleanup' exit
     psql $PGCOPYDB_SOURCE_PGURI --echo-all --command 'alter user current_user with replication'
     psql $PGCOPYDB_TARGET_PGURI --echo-all --command 'alter user current_user with replication'
     pgcopydb ping
     pgcopydb clone --follow
-    pgcopydb stream cleanup
 
   finish.sh: |
     #!/bin/bash
