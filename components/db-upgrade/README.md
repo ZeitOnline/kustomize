@@ -52,3 +52,16 @@ After the main `pgcopydb` process, i.e. the job, has exited, any deployments tha
 ```bash
 kubectl rollout restart deployments/postgrest
 ```
+
+Alternatively, all such deployments can be [annotated so that they will be automatically restarted after changes to related configmaps](https://github.com/stakater/Reloader?tab=readme-ov-file#how-to-use-reloader). With that changing and pushing the configmap holding the `PGSERVICE` definition will trigger the desired restarts as well:
+
+```yaml
+kind: Deployment
+metadata:
+  name: foo
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  template:
+    …
+```
