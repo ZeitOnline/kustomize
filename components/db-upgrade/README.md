@@ -47,10 +47,10 @@ The script also provides a hook to optionally revoke write access beforehand to 
 kubectl exec job/db-upgrade -- /migration/finish.sh
 ```
 
-After the main `pgcopydb` process, i.e. the job, has exited, any deployments that directly use the database can be switched to the new instance or restarted. Due to the just stopped replication this can happen with very little downtime.
+After the main `pgcopydb` process, i.e. the job, has exited, any deployments that directly use the database can be switched to the new instance or restarted. Thanks to the just stopped replication this can happen with very little downtime.
 
 ```bash
-kubectl rollout restart deployments/postgrest
+kubectl wait --for=condition=complete --timeout=1h jobs/db-upgrade && kubectl rollout restart deployments/postgrest
 ```
 
 Alternatively, all such deployments can be [annotated so that they will be automatically restarted after changes to related configmaps](https://github.com/stakater/Reloader?tab=readme-ov-file#how-to-use-reloader). With that changing and pushing the configmap holding the `PGSERVICE` definition will trigger the desired restarts as well:
