@@ -1,0 +1,35 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-upgrade
+  labels:
+    pg-services: required
+spec:
+  backoffLimit: 0       # no retries please
+  template:
+    metadata:
+      labels:
+        app: db-upgrade
+    spec:
+      containers:
+        - name: db-upgrade
+          image: dimitri/pgcopydb:v0.16
+          command:
+          - bash
+          - /migration/start.sh
+          envFrom:
+          - configMapRef:
+              name: db-upgrade
+          securityContext:
+            runAsUser: 0        # must be able to read the certs
+          volumeMounts:
+          - name: db-upgrade-helper
+            mountPath: /migration
+            readOnly: true
+      volumes:
+      - name: db-upgrade-helper
+        configMap:
+          name: db-upgrade-helper
+          defaultMode: 0777
+      restartPolicy: Never
