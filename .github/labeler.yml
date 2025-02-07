@@ -1,0 +1,6 @@
+# see https://github.com/marketplace/actions/labeler
+
+# add team label to all pull requests
+team-zoe:
+- changed-files:
+  - any-glob-to-any-file: '**'
