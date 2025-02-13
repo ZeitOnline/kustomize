@@ -1,0 +1,34 @@
+# Changelog
+
+## [1.15.0](https://github.com/ZeitOnline/kustomize/compare/v1.14.0...1.15.0) (2025-02-13)
+
+
+### Features
+
+* activate gzip encoding and turn on access log for now ([d62fdd0](https://github.com/ZeitOnline/kustomize/commit/d62fdd00a7b67a35f62890b778ae138ab6558a3a))
+* add empty env list to be spiele-deployment conform ([3a3d730](https://github.com/ZeitOnline/kustomize/commit/3a3d73023e21db936baa6bdf8b2bb7646dd82bcd))
+* add kustomize component for 'migrator' job ([d97342e](https://github.com/ZeitOnline/kustomize/commit/d97342e77de688a6b67f8f33c0195af3248bc8ae))
+* add kustomize component to set up 'postgrest' ([8e7215f](https://github.com/ZeitOnline/kustomize/commit/8e7215f50a4594fbe34b17f2dbded39437b651c9))
+* add kustomize component to set up a simple 'nightwatch' cronjob ([35788a8](https://github.com/ZeitOnline/kustomize/commit/35788a87d370b39f6eeede74e6c9db08a5fa5361))
+* add kustomize component to use PostgreSQL "service files" ([944ef5e](https://github.com/ZeitOnline/kustomize/commit/944ef5ef635949b95001c0a7421cd9c61893207b))
+* add kustomize component to wait for 'alembic' migrations ([6a2bfc7](https://github.com/ZeitOnline/kustomize/commit/6a2bfc723b9eab6409a25deef7dc32e61bd3ab48))
+* add kustomize components for development with 'Tilt' ([a315671](https://github.com/ZeitOnline/kustomize/commit/a315671150b33a4384b2bbec1c491e5591a9b271))
+* add kustomize components to provide a proxy for GCS buckets ([6793a59](https://github.com/ZeitOnline/kustomize/commit/6793a59942d8f9eafe39d194fe15736d716eddec))
+* allow 'testrunner' to use "pg services" ([61bb425](https://github.com/ZeitOnline/kustomize/commit/61bb425183a2da57819d68911a55d6bc7c8ecd76))
+* **cloudsql:** add (shared) component for database upgrades ([bc8c05f](https://github.com/ZeitOnline/kustomize/commit/bc8c05fa2815f715df01b7800cffd3b98129c0be))
+* **nightwatch:** configure staging/production via environment [ZO-5573] ([5f93fa3](https://github.com/ZeitOnline/kustomize/commit/5f93fa345048db093f002e9bb9cd5951a71b731b))
+* **nightwatch:** provide namespace as env var, so we can set the prometheus label centrally instead of per-project ([11b4207](https://github.com/ZeitOnline/kustomize/commit/11b4207fa1e0b05161f21c94231f66b322c93333))
+* turn 'nightwatch' cronjob into a (long-running) deployment ([97be890](https://github.com/ZeitOnline/kustomize/commit/97be8901824fc08a95a08bfaa51c003d9266b10c))
+* Use json formatted output introduced in zeit.nightwatch-1.7 to get readable logs in kibana ([52d70a8](https://github.com/ZeitOnline/kustomize/commit/52d70a83c086f9c62c41bf08e428169ed3348cd9))
+
+
+### Bug Fixes
+
+* add 'readiness' probe and resource requests for GCS proxy ([9f40186](https://github.com/ZeitOnline/kustomize/commit/9f401869f5e90592f63f5b10c348113033c60ba3))
+* **db-upgrade:** also try to clean up after errors ([82194e0](https://github.com/ZeitOnline/kustomize/commit/82194e0ffd4a8fa0d67b719a2bf90860fb8c2ade))
+* **db-upgrade:** grant 'replication' role on source and target ([660ada7](https://github.com/ZeitOnline/kustomize/commit/660ada7c29f53bad1a0c1c15dbf665c4f3bd5b5e))
+* go with the default browser & channel ([36ecea1](https://github.com/ZeitOnline/kustomize/commit/36ecea15a76617b2f0bac19907f8db2e1ccb3238))
+* make configmap for 'testrunner' environment optional ([b34e017](https://github.com/ZeitOnline/kustomize/commit/b34e01715da0601482904bf6bd760366726cb1d0))
+* the loop should be run using `bash` ([b1a67c2](https://github.com/ZeitOnline/kustomize/commit/b1a67c299eb543f07749becd2130ffad8c88ac2e))
+* use 'baseproject' service account in order to access vault ([d882fdf](https://github.com/ZeitOnline/kustomize/commit/d882fdf2de54762552a1b8ca2f54078b053165da))
+* use better name for the "nightwatch secrets" ([c2313de](https://github.com/ZeitOnline/kustomize/commit/c2313de34cf7e30f31a0396ce4cd31d2d7d3ccbc))
