@@ -1,0 +1,34 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-upgrade
+data:
+  PGSERVICEFILE: /vault/secrets/pg/services
+  PGCOPYDB_SOURCE_PGURI: "postgres://?service=db"
+  PGCOPYDB_TARGET_PGURI: "please overwrite target db uri"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-upgrade-helper
+data:
+  start.sh: |
+    #!/bin/bash
+    set -o errexit -o xtrace
+    trap 'sleep 1h' err
+    trap 'pgcopydb stream cleanup' exit
+    psql $PGCOPYDB_SOURCE_PGURI --echo-all --command 'alter user current_user with replication'
+    psql $PGCOPYDB_TARGET_PGURI --echo-all --command 'alter user current_user with replication'
+    pgcopydb ping
+    pgcopydb clone --follow
+
+  finish.sh: |
+    #!/bin/bash
+    set -o errexit -o xtrace
+    psql service=db --echo-all --file /migration/readonly.sql
+    pgcopydb stream sentinel set endpos --current
+
+  readonly.sql: |
+    -- revoke write access from API users

@@ -7,6 +7,8 @@ metadata:
     kind: postgrest
     pg-services: required
     wait-for-migrations: required
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   template:
     metadata:
