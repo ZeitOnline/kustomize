@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.1](https://github.com/ZeitOnline/kustomize/compare/1.15.0...1.15.1) (2025-02-28)
+
+
+### Bug Fixes
+
+* **postgrest:** reduce default log level to warnings ([2241534](https://github.com/ZeitOnline/kustomize/commit/2241534df5e698a57a61e736b9d34f8236edcc7f))
+
 ## [1.15.0](https://github.com/ZeitOnline/kustomize/compare/v1.14.0...1.15.0) (2025-02-13)
 
 
