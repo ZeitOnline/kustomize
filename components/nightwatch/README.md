@@ -6,7 +6,7 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
 components:
-- github.com/ZeitOnline/kustomize/components/nightwatch
+- github.com/ZeitOnline/kustomize/components/nightwatch?ref=x.y
 
 images:
 - name: nightwatch
