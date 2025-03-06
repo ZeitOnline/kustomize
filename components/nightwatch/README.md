@@ -19,9 +19,8 @@ patches:
     name: nightwatch
   patch: |-
     - op: replace
-      path: /spec/template/spec/containers/0/args
-      value:
-        - "--nightwatch-environment=production"
+      path: /spec/template/spec/containers/0/env/0/value
+      value: production
 ```
 
-Note that the ``patches`` section is (optionally) used to replace the default environment the 'nightwatch' image is testing.
+Note that the ``patches`` section is (optionally) used to replace the default environment (`staging`) that the 'nightwatch' image is testing.
