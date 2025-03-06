@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.16.0](https://github.com/ZeitOnline/kustomize/compare/1.15.0...1.16.0) (2025-03-06)
+
+
+### Features
+
+* **nightwatch:** upload test output to GCS instead of trying to log to stdout [ZO-5537] ([6a0e094](https://github.com/ZeitOnline/kustomize/commit/6a0e09413b8d38eb53d92c3c7e9e9a3dbadbe09e))
+
+
+### Bug Fixes
+
+* **postgrest:** reduce default log level to warnings ([2241534](https://github.com/ZeitOnline/kustomize/commit/2241534df5e698a57a61e736b9d34f8236edcc7f))
+
 ## [1.15.0](https://github.com/ZeitOnline/kustomize/compare/v1.14.0...1.15.0) (2025-02-13)
 
 
