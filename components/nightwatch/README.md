@@ -1,6 +1,10 @@
 ## 'nightwatch' runner component
 
-This component can be used to define a 'nightwatch' deployment running in Kubernetes, for example with a ``nightwatch/kustomization.yaml`` file like this:
+This component can be used to define a 'nightwatch' deployment running in Kubernetes, for example with a ``kustomization.yaml`` file like this.
+
+See detailed docs at https://docs.zeit.de/monitoring/howto/nightwatch/
+
+
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
