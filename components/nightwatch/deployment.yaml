@@ -7,7 +7,21 @@ data:
   run.sh: |
     while true
     do
-      $@
+      folder=nightwatch-zeit-de/$NIGHTWATCH_NAMESPACE/$NIGHTWATCH_ENVIRONMENT
+      timestamp=$(date +%Y/%m/%d/%H-%M)
+      echo "Nightwatch run $folder/$timestamp"
+      rm -f report.xml report.html
+
+      if ! $@ --junitxml=report.xml then
+          failure=1
+      fi
+
+      pipenv run junit2html report.xml report.html
+      pipenv run gcs-upload report.html gs://$folder/$timestamp.html
+      if [[ $failure == 1 ]]; then
+          pipenv run gcs-upload report.html gs://$folder/lastfailed.html
+      fi
+
       sleep 4m
     done
 
@@ -39,10 +53,10 @@ spec:
           - "run"
           - "pytest"
           - "--tb=native"
-          - "--verbose"
+          - "--quiet"
+          - "--show-capture=no"
           - "--prometheus"
           - "--prometheus-pushgateway-url=http://pushgateway.cluster-infra.svc.cluster.local:9091/"
-          - "--json-report=-"
           args:
           - "--nightwatch-environment=$NIGHTWATCH_ENVIRONMENT"
           volumeMounts:
