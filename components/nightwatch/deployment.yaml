@@ -12,7 +12,7 @@ data:
       echo "Nightwatch run $folder/$timestamp"
       rm -f report.xml report.html
 
-      if ! $@ --junitxml=report.xml then
+      if ! $@ --junitxml=report.xml; then
           failure=1
       fi
 
