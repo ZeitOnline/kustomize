@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.1](https://github.com/ZeitOnline/kustomize/compare/1.16.0...1.16.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* correct syntax in nightwatch run.sh ([#10](https://github.com/ZeitOnline/kustomize/issues/10)) ([599dc48](https://github.com/ZeitOnline/kustomize/commit/599dc4814fae1e1fedf0c55ec538547c5a9bd95c))
+
 ## [1.16.0](https://github.com/ZeitOnline/kustomize/compare/1.15.0...1.16.0) (2025-03-06)
 
 
