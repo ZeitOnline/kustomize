@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.0](https://github.com/ZeitOnline/kustomize/compare/1.16.1...1.17.0) (2025-04-22)
+
+
+### Features
+
+* **k8s:** Do not set k8s resources in component postgrest ([fde4175](https://github.com/ZeitOnline/kustomize/commit/fde4175f46313a48e3af4ef8a342605c034a0125))
+
 ## [1.16.1](https://github.com/ZeitOnline/kustomize/compare/1.16.0...1.16.1) (2025-03-26)
 
 
