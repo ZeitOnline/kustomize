@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.1](https://github.com/ZeitOnline/kustomize/compare/1.17.0...1.17.1) (2025-05-20)
+
+
+### Bug Fixes
+
+* **postgresql:** GKE now requires a minimum PVC size of 8GB ([af1c222](https://github.com/ZeitOnline/kustomize/commit/af1c222df8cd9618b34515be9db4264a7aa4b7cf))
+
 ## [1.17.0](https://github.com/ZeitOnline/kustomize/compare/1.16.1...1.17.0) (2025-04-22)
 
 
