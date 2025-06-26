@@ -5,6 +5,12 @@ metadata:
   name: nightwatch-helpers
 data:
   run.sh: |
+    if which uv > /dev/null; then
+      run="uv run --no-sync"
+    else
+      run="pipenv run"
+    fi
+
     while true
     do
       folder=nightwatch-zeit-de/$NIGHTWATCH_NAMESPACE/$NIGHTWATCH_ENVIRONMENT
@@ -12,14 +18,14 @@ data:
       echo "Nightwatch run $folder/$timestamp"
       rm -f report.xml report.html
 
-      if ! $@ --junitxml=report.xml; then
+      if ! $run $@ --junitxml=report.xml; then
           failure=1
       fi
 
-      pipenv run junit2html report.xml report.html
-      pipenv run gcs-upload report.html gs://$folder/$timestamp.html
+      $run junit2html report.xml report.html
+      $run gcs-upload report.html gs://$folder/$timestamp.html
       if [[ $failure == 1 ]]; then
-          pipenv run gcs-upload report.html gs://$folder/lastfailed.html
+          $run gcs-upload report.html gs://$folder/lastfailed.html
       fi
 
       sleep 4m
@@ -49,8 +55,6 @@ spec:
           command:
           - "bash"
           - "/helpers/run.sh"
-          - "pipenv"
-          - "run"
           - "pytest"
           - "--tb=native"
           - "--quiet"
