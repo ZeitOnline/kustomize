@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.18.0](https://github.com/ZeitOnline/kustomize/compare/1.17.0...1.18.0) (2025-06-27)
+
+
+### Features
+
+* **nightwatch:** prefer `uv` to run the tests & helpers ([5993544](https://github.com/ZeitOnline/kustomize/commit/59935445d550b1057e9b1e20a8d9550a827778cc))
+* **nightwatch:** prefer `uv` to run the tests & helpers ([#14](https://github.com/ZeitOnline/kustomize/issues/14)) ([d221e17](https://github.com/ZeitOnline/kustomize/commit/d221e172aaf8aeba46a2d8552a74172ba9d49b34))
+
+
+### Bug Fixes
+
+* **postgresql:** GKE now requires a minimum PVC size of 8GB ([af1c222](https://github.com/ZeitOnline/kustomize/commit/af1c222df8cd9618b34515be9db4264a7aa4b7cf))
+
 ## [1.17.0](https://github.com/ZeitOnline/kustomize/compare/1.16.1...1.17.0) (2025-04-22)
 
 
