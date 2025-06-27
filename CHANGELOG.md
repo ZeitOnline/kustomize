@@ -5,7 +5,6 @@
 
 ### Features
 
-* **nightwatch:** prefer `uv` to run the tests & helpers ([5993544](https://github.com/ZeitOnline/kustomize/commit/59935445d550b1057e9b1e20a8d9550a827778cc))
 * **nightwatch:** prefer `uv` to run the tests & helpers ([#14](https://github.com/ZeitOnline/kustomize/issues/14)) ([d221e17](https://github.com/ZeitOnline/kustomize/commit/d221e172aaf8aeba46a2d8552a74172ba9d49b34))
 
 
