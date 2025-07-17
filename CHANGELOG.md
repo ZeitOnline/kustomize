@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.1](https://github.com/ZeitOnline/kustomize/compare/1.19.0...1.19.1) (2025-07-17)
+
+
+### Bug Fixes
+
+* **nightwatch:** disable pytest cache ([f79b877](https://github.com/ZeitOnline/kustomize/commit/f79b877e5ceb38900e2d40223b9bb323d4f89913))
+
 ## [1.19.0](https://github.com/ZeitOnline/kustomize/compare/1.18.0...1.19.0) (2025-07-17)
 
 
