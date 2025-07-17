@@ -59,6 +59,8 @@ spec:
           - "/helpers/run.sh"
           - "pytest"
           - "--tb=native"
+          - "-p"
+          - "no:cacheprovider"
           - "--quiet"
           - "--show-capture=no"
           - "--prometheus"
