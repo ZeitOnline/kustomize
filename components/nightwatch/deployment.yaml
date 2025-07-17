@@ -16,16 +16,16 @@ data:
       folder=nightwatch-zeit-de/$NIGHTWATCH_NAMESPACE/$NIGHTWATCH_ENVIRONMENT
       timestamp=$(date +%Y/%m/%d/%H-%M)
       echo "Nightwatch run $folder/$timestamp"
-      rm -f report.xml report.html
+      rm -f /tmp/report.*
 
-      if ! $run $@ --junitxml=report.xml; then
+      if ! $run $@ --junitxml=/tmp/report.xml; then
           failure=1
       fi
 
-      $run junit2html report.xml report.html
-      $run gcs-upload report.html gs://$folder/$timestamp.html
+      $run junit2html /tmp/report.xml /tmp/report.html
+      $run gcs-upload /tmp/report.html gs://$folder/$timestamp.html
       if [[ $failure == 1 ]]; then
-          $run gcs-upload report.html gs://$folder/lastfailed.html
+          $run gcs-upload /tmp/report.html gs://$folder/lastfailed.html
       fi
 
       sleep 4m
@@ -49,6 +49,8 @@ spec:
         reloader.stakater.com/auto: "true"
     spec:
       serviceAccountName: baseproject
+      securityContext:
+        fsGroup: 10000 # make volumes readable by `app` user
       containers:
         - name: nightwatch
           image: nightwatch
@@ -67,6 +69,8 @@ spec:
           - name: nightwatch-helpers
             mountPath: /helpers
             readOnly: true
+          - mountPath: /tmp # to support readOnlyRootFilesystem
+            name: tmp
           env:
           - name: NIGHTWATCH_ENVIRONMENT
             value: staging
@@ -78,7 +82,15 @@ spec:
           - secretRef:
               name: nightwatch-secrets
               optional: true
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - "ALL"
       volumes:
       - name: nightwatch-helpers
         configMap:
           name: nightwatch-helpers
+      - name: tmp
+        emptyDir:
+          medium: Memory
