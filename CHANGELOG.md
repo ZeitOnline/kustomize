@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.0](https://github.com/ZeitOnline/kustomize/compare/1.18.0...1.19.0) (2025-07-17)
+
+
+### Features
+
+* **nightwatch:** run as non-root, with readonly filesystem ([cdc8278](https://github.com/ZeitOnline/kustomize/commit/cdc8278fc9b86dbe7a39d36390055c0fabec306e))
+
 ## [1.18.0](https://github.com/ZeitOnline/kustomize/compare/1.17.0...1.18.0) (2025-06-27)
 
 
