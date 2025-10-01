@@ -1,0 +1,19 @@
+# this layer makes sure all database clients have a
+# 'cloud-sql-proxy' set up as a sidecar
+
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+patches:
+- path: deployment.yaml
+  target:
+    kind: Deployment
+    labelSelector: cloud-sql-proxy=required
+- path: deployment.yaml
+  target:
+    kind: Job
+    labelSelector: cloud-sql-proxy=required
+- path: cronjob.yaml
+  target:
+    kind: CronJob
+    labelSelector: cloud-sql-proxy=required
