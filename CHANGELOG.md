@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.0](https://github.com/ZeitOnline/kustomize/compare/1.19.1...1.20.0) (2025-10-01)
+
+
+### Features
+
+* **cloudsql:** add component for 'cloud-sql-proxy' sidecar ([#18](https://github.com/ZeitOnline/kustomize/issues/18)) ([11523ae](https://github.com/ZeitOnline/kustomize/commit/11523aee2f19bec7637c60fd5c14b69fa8c37a50))
+
 ## [1.19.1](https://github.com/ZeitOnline/kustomize/compare/1.19.0...1.19.1) (2025-07-17)
 
 
