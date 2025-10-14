@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.0](https://github.com/ZeitOnline/kustomize/compare/1.20.0...1.21.0) (2025-10-14)
+
+
+### Features
+
+* add component to set up 'oauth2 proxy' instances ([#15](https://github.com/ZeitOnline/kustomize/issues/15)) ([877b4b0](https://github.com/ZeitOnline/kustomize/commit/877b4b0e9974240409fd12590053e71e341dceb4))
+
 ## [1.20.0](https://github.com/ZeitOnline/kustomize/compare/1.19.1...1.20.0) (2025-10-01)
 
 
