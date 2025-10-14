@@ -7,6 +7,7 @@ This repository contains reusable [kustomize](https://kustomize.io/) components 
 - [gcs-bucket-proxy](components/gcs-bucket-proxy/): provides a proxy for easy access to Google Cloud Storage buckets
 - [migrator](components/migrator/): runs database migration jobs using [alembic](https://alembic.sqlalchemy.org)
 - [nightwatch](components/nightwatch/): integrates our "[Nachtwache](https://docs.zeit.de/monitoring/howto/nightwatch/)" tests
+- [oauth2-proxy](components/oauth2-proxy/): integrates [OAuth2 Proxy](https://oauth2-proxy.github.io/oauth2-proxy/) to authenticate against [Keycloak](https://docs.zeit.de/keycloak/)
 - [pg-services](components/pg-services/): provides database credentials as PostgreSQL "[connection service files](https://www.postgresql.org/docs/17/libpq-pgservice.html)"
 - [postgresql](components/postgresql/): provides PostgreSQL database deployments intended for testing
 - [postgrest](components/postgrest/): provides [PostgREST](https://docs.postgrest.org/) deployments
