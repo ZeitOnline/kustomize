@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.1](https://github.com/ZeitOnline/kustomize/compare/1.21.0...1.21.1) (2025-11-05)
+
+
+### Bug Fixes
+
+* **oauth:** set caching headers for all response status codes & refresh cookie ([#21](https://github.com/ZeitOnline/kustomize/issues/21)) ([3288ea2](https://github.com/ZeitOnline/kustomize/commit/3288ea27e92a8e07d723fde7554f770e63aa275f))
+
 ## [1.21.0](https://github.com/ZeitOnline/kustomize/compare/1.20.0...1.21.0) (2025-10-14)
 
 
