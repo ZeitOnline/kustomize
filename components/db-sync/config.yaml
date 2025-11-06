@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-sync
+data:
+  PGSERVICEFILE: /vault/secrets/pg/services
+  PGCOPYDB_SOURCE_PGURI: "postgres://?service=staging"
+  PGCOPYDB_TARGET_PGURI: "postgres://"
+  PGCOPYDB_DROP_IF_EXISTS: "on"
