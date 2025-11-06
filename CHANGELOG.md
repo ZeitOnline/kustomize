@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.0](https://github.com/ZeitOnline/kustomize/compare/1.21.1...1.22.0) (2025-11-06)
+
+
+### Features
+
+* **cloudsql:** add component to sync databases via cronjob ([#23](https://github.com/ZeitOnline/kustomize/issues/23)) ([72ed219](https://github.com/ZeitOnline/kustomize/commit/72ed219ffb6c535fd672aa516d828c24981482a8))
+
 ## [1.21.1](https://github.com/ZeitOnline/kustomize/compare/1.21.0...1.21.1) (2025-11-05)
 
 
