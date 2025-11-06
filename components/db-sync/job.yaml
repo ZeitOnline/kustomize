@@ -28,7 +28,7 @@ spec:
               - configMapRef:
                   name: db-sync
               - configMapRef:
-                  name: testrunner-config
+                  name: postgresql-config
                   optional: true
               securityContext:
                 runAsUser: 0        # must be able to read the certs
