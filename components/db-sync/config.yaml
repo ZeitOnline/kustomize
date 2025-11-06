@@ -8,3 +8,18 @@ data:
   PGCOPYDB_SOURCE_PGURI: "postgres://?service=staging"
   PGCOPYDB_TARGET_PGURI: "postgres://"
   PGCOPYDB_DROP_IF_EXISTS: "on"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-sync-helper
+data:
+  run.sh: |
+    #!/bin/bash
+    set -o errexit -o xtrace
+    trap 'sleep 1h' err
+    apt update
+    apt install --yes postgresql-client-17
+    pgcopydb ping
+    pgcopydb clone --no-owner --no-acl
