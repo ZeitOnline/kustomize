@@ -3,5 +3,4 @@ kind: Component
 
 resources:
 - config.yaml
-- deployment.yaml
-- service.yaml
+- job.yaml

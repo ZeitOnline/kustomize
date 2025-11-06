@@ -1,0 +1,44 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-sync
+  labels:
+    pg-services: required
+spec:
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  schedule: "0 3 * * *"
+  suspend: true
+  jobTemplate:
+    spec:
+      backoffLimit: 0       # no retries please
+      template:
+        metadata:
+          labels:
+            app: db-sync
+        spec:
+          containers:
+            - name: db-sync
+              image: dimitri/pgcopydb:v0.16
+              command:
+              - bash
+              - /sync/run.sh
+              envFrom:
+              - configMapRef:
+                  name: db-sync
+              - configMapRef:
+                  name: postgresql-config
+                  optional: true
+              securityContext:
+                runAsUser: 0        # must be able to read the certs
+              volumeMounts:
+              - name: db-sync-helper
+                mountPath: /sync
+                readOnly: true
+          volumes:
+          - name: db-sync-helper
+            configMap:
+              name: db-sync-helper
+              defaultMode: 0777
+          restartPolicy: Never
