@@ -3,6 +3,7 @@
 This repository contains reusable [kustomize](https://kustomize.io/) components for Kubernetes deployments. Below is a list of the available components:
 
 - [cloud-sql-proxy](components/cloud-sql-proxy/): deploys a [Cloud SQL Proxy](https://github.com/GoogleCloudPlatform/cloud-sql-proxy) for secure database connections
+- [db-sync](components/db-sync/): handles PostgreSQL database "syncs", typically between 'staging' and 'devel'
 - [db-upgrade](components/db-upgrade/): handles PostgreSQL upgrades and migrations between instances
 - [gcs-bucket-proxy](components/gcs-bucket-proxy/): provides a proxy for easy access to Google Cloud Storage buckets
 - [migrator](components/migrator/): runs database migration jobs using [alembic](https://alembic.sqlalchemy.org)
