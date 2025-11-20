@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.1](https://github.com/ZeitOnline/kustomize/compare/1.22.0...1.22.1) (2025-11-20)
+
+
+### Bug Fixes
+
+* **nightwatch:** prepare `uv` to run on read-only file systems ([#25](https://github.com/ZeitOnline/kustomize/issues/25)) ([07fddf8](https://github.com/ZeitOnline/kustomize/commit/07fddf8735da06046713db1c68d85f186d85ccf3))
+
 ## [1.22.0](https://github.com/ZeitOnline/kustomize/compare/1.21.1...1.22.0) (2025-11-06)
 
 
