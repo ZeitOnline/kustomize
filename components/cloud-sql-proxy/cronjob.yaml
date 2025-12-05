@@ -12,15 +12,13 @@
     name: cloud-sql-proxy
     command:
     - /cloud-sql-proxy
-    - $(INSTANCE_CONNECTION)
+    - "--impersonate-service-account=$(CLOUDSQL_PROXY_IMPERSONATION_SA)"
     - --auto-iam-authn
     - --address=0.0.0.0
-    env:
-    - name: INSTANCE_CONNECTION
-      valueFrom:
-        secretKeyRef:
-          key: INSTANCE_CONNECTION
-          name: cloudsql-proxy-iam
+    - $(INSTANCE_CONNECTION)
+    envFrom:
+    - secretRef:
+        name: cloudsql-proxy-iam
     image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.2@sha256:fd2baaf9c709598e54838a6875833759412033ab5ee578cc81f9825fa34bd296
     securityContext:
       runAsNonRoot: true
