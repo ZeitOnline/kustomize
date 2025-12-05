@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.0](https://github.com/ZeitOnline/kustomize/compare/1.22.1...1.23.0) (2025-12-05)
+
+
+### Features
+
+* **cloud-sql-proxy:** use service account impersonation ([#27](https://github.com/ZeitOnline/kustomize/issues/27)) ([4259362](https://github.com/ZeitOnline/kustomize/commit/42593623ac6d66ffddf12257e10cde8a1a186d70))
+
 ## [1.22.1](https://github.com/ZeitOnline/kustomize/compare/1.22.0...1.22.1) (2025-11-20)
 
 
