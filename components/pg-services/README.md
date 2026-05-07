@@ -1,12 +1,12 @@
 # 'pg-services' component
 
-This component sets up the [PostgreSQL service definition file](https://www.postgresql.org/docs/current/libpq-pgservice.html) for database clients in Kubernetes. It uses the Vault agent injector to mount the service file and configures the `PGSERVICEFILE` and `PGSERVICE` environment variables accordingly.
+This component is intended to help hooking up a [PostgreSQL service definition file](https://www.postgresql.org/docs/current/libpq-pgservice.html) as provided by the [`cloudsql_credentials` Terraform module](https://github.com/ZeitOnline/terraform-modules/tree/main/cloudsql_credentials) with database clients in Kubernetes. It mounts the service file and configures the `PGSERVICEFILE` and `PGSERVICE` environment variables accordingly.
 
-It targets any `Deployment`, `Job`, or `CronJob` that carries the `pg-services=required` label. The `pg-service` secret (provided by `tf:cloudsql_credentials`) is mounted at `/vault/secrets/pg`.
+It targets any `Deployment`, `Job`, or `CronJob` that carries the `pg-services=required` label. The `pg-service` secret is mounted at `/vault/secrets/pg`.
 
 ## Setup
 
-Add the `pg-services=required` label to the resources that need database access and include the component:
+Add the `pg-services: required` label to the resources that need database access and include the component:
 
 **`k8s/staging/kustomization.yaml`**
 ```yaml
@@ -14,7 +14,7 @@ resources:
 - ../base/myapp
 
 components:
-- github.com/ZeitOnline/kustomize/components/pg-services?ref=1.22.0
+- github.com/ZeitOnline/kustomize/components/pg-services?ref=1.23.0
 ```
 
 **`k8s/base/myapp/deployment.yaml`**
