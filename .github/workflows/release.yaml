@@ -16,4 +16,4 @@ jobs:
       pull-requests: write
     steps:
       - name: Release please
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
