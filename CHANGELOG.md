@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/ZeitOnline/kustomize/compare/1.23.0...2.0.0) (2026-06-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cloud-sql-proxy:** inject only PGUSER into the app container ([#29](https://github.com/ZeitOnline/kustomize/issues/29))
+
+### Features
+
+* **cloud-sql-proxy:** inject only PGUSER into the app container ([#29](https://github.com/ZeitOnline/kustomize/issues/29)) ([e84a617](https://github.com/ZeitOnline/kustomize/commit/e84a617e52b48d31a8f8ebecffb04c9dc18638cf))
+
 ## [1.23.0](https://github.com/ZeitOnline/kustomize/compare/1.22.1...1.23.0) (2025-12-05)
 
 
