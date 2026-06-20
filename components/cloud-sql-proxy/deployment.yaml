@@ -1,11 +1,20 @@
 - op: add
   path: /spec/template/spec/serviceAccount
   value: baseproject
+# Inject ONLY the IAM SQL user (PGUSER) into the application container. The remaining
+# libpq settings (PGHOST=localhost, PGPORT, PGDATABASE, PGSSLMODE, ...) that the whole
+# `cloudsql-proxy-iam` secret used to provide must now be supplied by the consuming
+# project itself. The full secret is still consumed by the proxy sidecar below, which
+# needs INSTANCE_CONNECTION and CLOUDSQL_PROXY_IMPERSONATION_SA.
+# NOTE: the targeted app container (containers[0]) must declare an `env:` list.
 - op: add
-  path: /spec/template/spec/containers/0/envFrom/-
+  path: /spec/template/spec/containers/0/env/-
   value:
-    secretRef:
-      name: cloudsql-proxy-iam
+    name: PGUSER
+    valueFrom:
+      secretKeyRef:
+        name: cloudsql-proxy-iam
+        key: PGUSER
 - op: add
   path: /spec/template/spec/containers/-
   value:
