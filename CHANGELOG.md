@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/ZeitOnline/kustomize/compare/2.0.0...2.1.0) (2026-07-10)
+
+
+### Features
+
+* **nightwatch:** also store the failed report as xml for better automated eval ([#31](https://github.com/ZeitOnline/kustomize/issues/31)) ([658dcec](https://github.com/ZeitOnline/kustomize/commit/658dcec928861ad407c3f95718a3fb5e692d726b))
+
 ## [2.0.0](https://github.com/ZeitOnline/kustomize/compare/1.23.0...2.0.0) (2026-06-20)
 
 
