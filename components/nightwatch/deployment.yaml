@@ -26,6 +26,7 @@ data:
       $run gcs-upload /tmp/report.html gs://$folder/$timestamp.html
       if [[ $failure == 1 ]]; then
           $run gcs-upload /tmp/report.html gs://$folder/lastfailed.html
+          $run gcs-upload /tmp/report.xml gs://$folder/lastfailed.xml
       fi
 
       sleep 4m
