@@ -18,11 +18,16 @@ For every labelled workload the component:
   `CLOUDSQL_PROXY_IMPERSONATION_SA`) and listens on `127.0.0.1`,
 - injects **only** `PGUSER` (the instance's IAM SQL user) into the application container
   (`containers[0]`) via a `secretKeyRef`,
-- on **Deployments**, enables the proxy's built-in health server
+- gives the sidecar the proxy's built-in health server
   (`CSQL_PROXY_HEALTH_CHECK=true`, `CSQL_PROXY_HTTP_ADDRESS=0.0.0.0`, default port `9090`)
-  and adds a `readinessProbe` on `/readiness`, so the Pod only becomes ready once the proxy
-  can reach the instance. This is deliberately **not** applied to `Job`/`CronJob` workloads,
-  where readiness gating is meaningless for run-to-completion Pods.
+  and a `readinessProbe` on `/readiness`, so a Deployment Pod only becomes ready once the
+  proxy can reach the instance. These are **inlined into the appended sidecar** rather than
+  layered on with a separate strategic-merge patch — a strategic merge on the `containers`
+  list reorders it, which breaks consumers that address the injected sidecar positionally
+  (e.g. a variant that retargets `.../containers/1/envFrom/0/secretRef/name`). Appending the
+  fully-formed container keeps its index stable. The probe is a no-op on run-to-completion
+  `Job`/`CronJob` Pods but is carried there too, so the injected container is identical
+  across workload kinds.
 
 > **The application container must declare an `env:` list** – the component appends `PGUSER`
 > to it with a JSON patch (`add` to `.../containers/0/env/-`), which fails if the list is

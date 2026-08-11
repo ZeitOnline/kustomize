@@ -17,9 +17,3 @@ patches:
   target:
     kind: CronJob
     labelSelector: cloud-sql-proxy=required
-# add a readiness probe to the sidecar appended above (Deployments only; must run after
-# the append patch so the container exists to be merged by name).
-- path: readiness_probe.yaml
-  target:
-    kind: Deployment
-    labelSelector: cloud-sql-proxy=required
