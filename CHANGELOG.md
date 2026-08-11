@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/ZeitOnline/kustomize/compare/2.1.0...2.2.0) (2026-08-11)
+
+
+### Features
+
+* **cloud-sql-proxy:** add readiness probe to the injected sidecar ([#33](https://github.com/ZeitOnline/kustomize/issues/33)) ([554a6b3](https://github.com/ZeitOnline/kustomize/commit/554a6b3c515ebd157e4842d176179e1c77a0da95))
+
 ## [2.1.0](https://github.com/ZeitOnline/kustomize/compare/2.0.0...2.1.0) (2026-07-10)
 
 
