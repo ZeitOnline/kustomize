@@ -17,7 +17,12 @@ For every labelled workload the component:
   `cloudsql-proxy-iam` secret (it needs `INSTANCE_CONNECTION` and
   `CLOUDSQL_PROXY_IMPERSONATION_SA`) and listens on `127.0.0.1`,
 - injects **only** `PGUSER` (the instance's IAM SQL user) into the application container
-  (`containers[0]`) via a `secretKeyRef`.
+  (`containers[0]`) via a `secretKeyRef`,
+- on **Deployments**, enables the proxy's built-in health server
+  (`CSQL_PROXY_HEALTH_CHECK=true`, `CSQL_PROXY_HTTP_ADDRESS=0.0.0.0`, default port `9090`)
+  and adds a `readinessProbe` on `/readiness`, so the Pod only becomes ready once the proxy
+  can reach the instance. This is deliberately **not** applied to `Job`/`CronJob` workloads,
+  where readiness gating is meaningless for run-to-completion Pods.
 
 > **The application container must declare an `env:` list** – the component appends `PGUSER`
 > to it with a JSON patch (`add` to `.../containers/0/env/-`), which fails if the list is

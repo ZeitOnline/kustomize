@@ -1,0 +1,30 @@
+# Adds a readiness probe to the cloud-sql-proxy sidecar appended by deployment.yaml.
+# Deployment-only: readiness gating is meaningless for run-to-completion Job/CronJob pods,
+# so this is NOT applied to those targets.
+#
+# Enables the proxy's built-in health server (mirror of --health-check / --http-address;
+# default --http-port is 9090) and probes /readiness, which returns 200 once the proxy can
+# reach the instance. Strategic merge by container name, so it is independent of container
+# order/position and runs after the sidecar has been appended.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # ignored for matching (the kustomization `target` selects the workloads); present only
+  # so the strategic-merge patch parses as a resource.
+  name: cloud-sql-proxy-readiness-probe
+spec:
+  template:
+    spec:
+      containers:
+      - name: cloud-sql-proxy
+        env:
+        - name: CSQL_PROXY_HEALTH_CHECK
+          value: "true"
+        - name: CSQL_PROXY_HTTP_ADDRESS
+          value: "0.0.0.0"
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 9090
+          initialDelaySeconds: 5
+          periodSeconds: 10
