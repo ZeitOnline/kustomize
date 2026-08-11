@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/ZeitOnline/kustomize/compare/2.2.0...2.2.1) (2026-08-11)
+
+
+### Bug Fixes
+
+* **cloud-sql-proxy:** inline the readiness probe to keep container order stable ([#35](https://github.com/ZeitOnline/kustomize/issues/35)) ([4e0eaa6](https://github.com/ZeitOnline/kustomize/commit/4e0eaa6200edfc7347e9c1c31c91c8c61fd52481))
+
 ## [2.2.0](https://github.com/ZeitOnline/kustomize/compare/2.1.0...2.2.0) (2026-08-11)
 
 
