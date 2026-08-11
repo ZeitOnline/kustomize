@@ -28,6 +28,20 @@
     envFrom:
     - secretRef:
         name: cloudsql-proxy-iam
+    # Kept identical to the Deployment/Job sidecar (see deployment.yaml) so the injected
+    # container is uniform across workload kinds. The probe is a no-op for run-to-completion
+    # CronJob pods but harmless.
+    env:
+    - name: CSQL_PROXY_HEALTH_CHECK
+      value: "true"
+    - name: CSQL_PROXY_HTTP_ADDRESS
+      value: "0.0.0.0"
     image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.2@sha256:fd2baaf9c709598e54838a6875833759412033ab5ee578cc81f9825fa34bd296
+    readinessProbe:
+      httpGet:
+        path: /readiness
+        port: 9090
+      initialDelaySeconds: 5
+      periodSeconds: 10
     securityContext:
       runAsNonRoot: true
