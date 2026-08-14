@@ -16,7 +16,9 @@ data:
       folder=nightwatch-zeit-de/$NIGHTWATCH_NAMESPACE/$NIGHTWATCH_ENVIRONMENT
       timestamp=$(date +%Y/%m/%d/%H-%M)
       echo "Nightwatch run $folder/$timestamp"
-      rm -f /tmp/report.*
+      rm -f /tmp/report.* /tmp/test-results.tar.gz
+      rm -rf test-results/*
+      failure=0
 
       if ! $run $@ --junitxml=/tmp/report.xml; then
           failure=1
@@ -27,6 +29,12 @@ data:
       if [[ $failure == 1 ]]; then
           $run gcs-upload /tmp/report.html gs://$folder/lastfailed.html
           $run gcs-upload /tmp/report.xml gs://$folder/lastfailed.xml
+
+          if [ -d test-results ]; then
+              tar -czf /tmp/test-results.tar.gz test-results
+              $run gcs-upload /tmp/test-results.tar.gz gs://$folder/$timestamp-test-results.tar.gz
+              $run gcs-upload /tmp/test-results.tar.gz gs://$folder/lastfailed-test-results.tar.gz
+          fi
       fi
 
       sleep 4m
