@@ -37,7 +37,7 @@ data:
           fi
       fi
 
-      sleep 4m
+      sleep ${NIGHTWATCH_SLEEP:-4m}
     done
 
 ---
