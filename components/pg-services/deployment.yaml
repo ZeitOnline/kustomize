@@ -13,4 +13,4 @@
     name: pg-service
     secret:
       secretName: pg-service  # provided by tf:cloudsql_credentials
-      defaultMode: 0600
+      defaultMode: 0640
