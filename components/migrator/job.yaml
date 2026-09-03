@@ -21,5 +21,4 @@ spec:
           - configMapRef:
               name: migrator-config
           volumeMounts: []
-      volumes: []
       restartPolicy: Never

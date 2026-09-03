@@ -6,6 +6,48 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
 patches:
+# make sure `.volumes` exists on the pod spec before the JSON patches below
+# append to it, so that targeted resources don't have to carry a placeholder
+# `volumes: []` themselves; merging an empty list leaves existing volumes
+# untouched
+- target:
+    kind: Deployment
+    labelSelector: pg-services=required
+  patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ignored   # the target selector above decides what is patched
+    spec:
+      template:
+        spec:
+          volumes: []
+- target:
+    kind: Job
+    labelSelector: pg-services=required
+  patch: |-
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: ignored
+    spec:
+      template:
+        spec:
+          volumes: []
+- target:
+    kind: CronJob
+    labelSelector: pg-services=required
+  patch: |-
+    apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: ignored
+    spec:
+      jobTemplate:
+        spec:
+          template:
+            spec:
+              volumes: []
 - path: config.yaml
   target:
     kind: ConfigMap
