@@ -1,0 +1,6 @@
+INHERIT: /zon/common_config.yaml
+nav:
+- "(re-usable) 'kustomize' components": README.md
+repo_url: https://github.com/ZeitOnline/kustomize
+site_name: kustomize
+team: team-engagement
