@@ -1,0 +1,26 @@
+- op: add
+  path: /spec/jobTemplate/spec/template/spec/securityContext
+  value:
+    fsGroup: 10000
+- op: add
+  path: /spec/jobTemplate/spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation
+  value: false
+- op: add
+  path: /spec/jobTemplate/spec/template/spec/containers/0/securityContext/capabilities
+  value:
+    drop:
+    - ALL
+- op: add
+  path: /spec/jobTemplate/spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem
+  value: true
+- op: add
+  path: /spec/jobTemplate/spec/template/spec/containers/0/volumeMounts/-
+  value:
+    name: tmp
+    mountPath: /tmp
+- op: add
+  path: /spec/jobTemplate/spec/template/spec/volumes/-
+  value:
+    name: tmp
+    emptyDir:
+      medium: Memory
