@@ -1,14 +1,11 @@
 - op: add
-  path: /spec/jobTemplate/spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation
-  value: false
-- op: add
-  path: /spec/jobTemplate/spec/template/spec/containers/0/securityContext/capabilities
+  path: /spec/jobTemplate/spec/template/spec/containers/0/securityContext
   value:
-    drop:
-    - ALL
-- op: add
-  path: /spec/jobTemplate/spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem
-  value: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: true
 - op: add
   path: /spec/jobTemplate/spec/template/spec/containers/0/volumeMounts/-
   value:
