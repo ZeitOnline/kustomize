@@ -1,8 +1,4 @@
 - op: add
-  path: /spec/template/spec/securityContext
-  value:
-    fsGroup: 10000
-- op: add
   path: /spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation
   value: false
 - op: add

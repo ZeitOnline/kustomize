@@ -1,4 +1,11 @@
-- op: add
-  path: /spec/jobTemplate/spec/template/spec/securityContext
-  value:
-    fsGroup: 10000
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ignored   # the target selector decides what is patched
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          securityContext:
+            fsGroup: 10000

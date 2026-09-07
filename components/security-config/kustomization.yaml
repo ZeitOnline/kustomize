@@ -2,18 +2,20 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
 patches:
+# the pod-level `fsGroup` applies to both levels; merging it in keeps any other
+# pod-level `securityContext` settings the target may have
 - path: fsgroup.yaml
   target:
     kind: Deployment
-    labelSelector: security-config=required
+    labelSelector: security-config in (required, hardened)
 - path: fsgroup.yaml
   target:
     kind: Job
-    labelSelector: security-config=required
+    labelSelector: security-config in (required, hardened)
 - path: fsgroup-cronjob.yaml
   target:
     kind: CronJob
-    labelSelector: security-config=required
+    labelSelector: security-config in (required, hardened)
 - path: hardened.yaml
   target:
     kind: Deployment
