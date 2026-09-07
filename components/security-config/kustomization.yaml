@@ -16,6 +16,48 @@ patches:
   target:
     kind: CronJob
     labelSelector: security-config in (required, hardened)
+# make sure `.volumes` exists on the pod spec before `hardened.yaml` appends the
+# `tmp` volume to it, so that targeted resources don't have to carry a
+# placeholder `volumes: []` themselves; merging an empty list leaves existing
+# volumes untouched
+- target:
+    kind: Deployment
+    labelSelector: security-config=hardened
+  patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ignored
+    spec:
+      template:
+        spec:
+          volumes: []
+- target:
+    kind: Job
+    labelSelector: security-config=hardened
+  patch: |-
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: ignored
+    spec:
+      template:
+        spec:
+          volumes: []
+- target:
+    kind: CronJob
+    labelSelector: security-config=hardened
+  patch: |-
+    apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: ignored
+    spec:
+      jobTemplate:
+        spec:
+          template:
+            spec:
+              volumes: []
 - path: hardened.yaml
   target:
     kind: Deployment
