@@ -1,15 +1,14 @@
-# `security-config: hardened-all` hardens *every* container of a workload,
-# addressing none of them by index or by name -- which a patch would have to do,
-# since a JSON patch needs a position and a strategic merge needs a container
-# name. A `replacements` field path can say `containers.*` instead.
+# The container-level part of `security-config: hardened`: the three flags on
+# *every* container of a workload, addressing none of them by index or by name
+# -- which a patch would have to do, since a JSON patch needs a position and a
+# strategic merge needs a container name. A `replacements` field path can say
+# `containers.*` instead.
 #
 # The whole `securityContext` is copied at once, because `replacements` turns
 # single values into strings on the way (`allowPrivilegeEscalation: "false"`),
-# which the API server rejects. So, as with 'hardened', the container-level
-# `securityContext` belongs to this component -- see the README.
+# which the API server rejects. The container-level `securityContext` therefore
+# belongs to this component -- see the README.
 #
-# It only sets the three container-level flags: writable paths are specific to
-# what a container actually does, so the workload declares those itself.
 # `initContainers` are left alone.
 
 apiVersion: kustomize.config.k8s.io/v1alpha1
@@ -26,21 +25,21 @@ replacements:
   targets:
   - select:
       kind: Deployment
-      labelSelector: security-config=hardened-all
+      labelSelector: security-config=hardened
     fieldPaths:
     - spec.template.spec.containers.*.securityContext
     options:
       create: true
   - select:
       kind: Job
-      labelSelector: security-config=hardened-all
+      labelSelector: security-config=hardened
     fieldPaths:
     - spec.template.spec.containers.*.securityContext
     options:
       create: true
   - select:
       kind: CronJob
-      labelSelector: security-config=hardened-all
+      labelSelector: security-config=hardened
     fieldPaths:
     - spec.jobTemplate.spec.template.spec.containers.*.securityContext
     options:

@@ -2,11 +2,11 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
 components:
-- hardened-all
+- flags
 
 patches:
-# drop the carrier the 'hardened-all' component needs for its `replacements`;
-# the patches of a component run after the components it includes
+# drop the carrier the 'flags' component needs for its `replacements`; the
+# patches of a component run after the components it includes
 - patch: |-
     $patch: delete
     apiVersion: apps/v1
@@ -18,16 +18,16 @@ patches:
 - path: fsgroup.yaml
   target:
     kind: Deployment
-    labelSelector: security-config in (required, hardened, hardened-all)
+    labelSelector: security-config in (required, hardened)
 - path: fsgroup.yaml
   target:
     kind: Job
-    labelSelector: security-config in (required, hardened, hardened-all)
+    labelSelector: security-config in (required, hardened)
 - path: fsgroup-cronjob.yaml
   target:
     kind: CronJob
-    labelSelector: security-config in (required, hardened, hardened-all)
-# make sure `.volumes` exists on the pod spec before `hardened.yaml` appends the
+    labelSelector: security-config in (required, hardened)
+# make sure `.volumes` exists on the pod spec before `tmp.yaml` appends the
 # `tmp` volume to it, so that targeted resources don't have to carry a
 # placeholder `volumes: []` themselves; merging an empty list leaves existing
 # volumes untouched
@@ -69,15 +69,19 @@ patches:
           template:
             spec:
               volumes: []
-- path: hardened.yaml
+# scratch space for the read-only root filesystem, mounted into the *first*
+# container -- the one place where an index is unavoidable, and harmless: a
+# spare /tmp is not a hazard. Containers that write elsewhere, and workloads
+# whose first container is not the interesting one, declare their own.
+- path: tmp.yaml
   target:
     kind: Deployment
     labelSelector: security-config=hardened
-- path: hardened.yaml
+- path: tmp.yaml
   target:
     kind: Job
     labelSelector: security-config=hardened
-- path: hardened-cronjob.yaml
+- path: tmp-cronjob.yaml
   target:
     kind: CronJob
     labelSelector: security-config=hardened
