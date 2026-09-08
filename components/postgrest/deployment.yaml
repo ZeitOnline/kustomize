@@ -7,6 +7,7 @@ metadata:
     kind: postgrest
     pg-services: required
     wait-for-migrations: required
+    security-config: hardened
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
@@ -26,7 +27,9 @@ spec:
               path: /rpc/health
               port: 3000
           securityContext:
-            runAsUser: 0        # must be able to read the certs
+            # must be able to read the certs -- 'security-config' replaces this
+            # when included, and makes them group-readable via `fsGroup` instead
+            runAsUser: 0
           env: []
           volumeMounts: []
       volumes: []
