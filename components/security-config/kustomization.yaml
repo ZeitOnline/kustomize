@@ -1,21 +1,32 @@
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
+components:
+- hardened-all
+
 patches:
-# the pod-level `fsGroup` applies to both levels; merging it in keeps any other
+# drop the carrier the 'hardened-all' component needs for its `replacements`;
+# the patches of a component run after the components it includes
+- patch: |-
+    $patch: delete
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: security-config-template
+# the pod-level `fsGroup` applies to every level; merging it in keeps any other
 # pod-level `securityContext` settings the target may have
 - path: fsgroup.yaml
   target:
     kind: Deployment
-    labelSelector: security-config in (required, hardened)
+    labelSelector: security-config in (required, hardened, hardened-all)
 - path: fsgroup.yaml
   target:
     kind: Job
-    labelSelector: security-config in (required, hardened)
+    labelSelector: security-config in (required, hardened, hardened-all)
 - path: fsgroup-cronjob.yaml
   target:
     kind: CronJob
-    labelSelector: security-config in (required, hardened)
+    labelSelector: security-config in (required, hardened, hardened-all)
 # make sure `.volumes` exists on the pod spec before `hardened.yaml` appends the
 # `tmp` volume to it, so that targeted resources don't have to carry a
 # placeholder `volumes: []` themselves; merging an empty list leaves existing

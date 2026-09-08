@@ -1,11 +1,14 @@
 # 'security-config' component
 
-This component provides two levels of pod hardening, selected via the value of the `security-config` label on a `Deployment`, `Job`, or `CronJob`:
+This component provides three levels of pod hardening, selected via the value of the `security-config` label on a `Deployment`, `Job`, or `CronJob`:
 
 - **`security-config: required`** — sets `fsGroup: 10000` at the pod level, so mounted volumes are readable by the `app` user used across our container images. No other changes to the manifest are needed.
 - **`security-config: hardened`** — everything `required` does, plus on the first container: `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]`, `readOnlyRootFilesystem: true`, and a memory-backed `emptyDir` mounted at `/tmp` so the now-read-only container has somewhere to write.
+- **`security-config: hardened-all`** — everything `required` does, plus those same three flags on **every** container, and nothing else: no `/tmp`, no assumptions about which container is the interesting one.
 
-Use `hardened` for containers that don't need to write anywhere but `/tmp` (most application workloads). Use `required` alone for containers that need broader filesystem access (e.g. writing migration state, or reasons that already justify a custom `runAsUser`).
+Use `hardened` for a single-container workload that writes nowhere but `/tmp` (most application workloads). Use `hardened-all` for a workload with sidecars, where hardening only `containers[0]` would leave the rest untouched — and where each container needs its own writable paths anyway. Use `required` alone for containers that need broader filesystem access.
+
+`hardened` addresses the first container **by index**, which is worth knowing about: a strategic-merge patch that lists containers reorders them to match itself, so an overlay patching a sidecar can quietly move that sidecar to `containers[0]` and hardening then lands on it instead. `hardened-all` has no such failure mode — a `replacements` field path can say `containers.*`, which neither a JSON patch (needs a position) nor a strategic merge (needs a container name) can express.
 
 ## Setup
 
@@ -46,6 +49,27 @@ That is not much of a restriction: the three fields `hardened` sets exist *only*
 | `fsGroup`, `fsGroupChangePolicy`, `supplementalGroups`, `sysctls` | `runAsUser`, `runAsGroup`, `runAsNonRoot`, `seLinuxOptions`, `seccompProfile`, `appArmorProfile` | `allowPrivilegeEscalation`, `capabilities`, `readOnlyRootFilesystem`, `privileged`, `procMount` |
 
 So a `hardened` workload that needs e.g. `runAsUser: 0` to read a mounted cert declares it on `spec.template.spec.securityContext` rather than on the container. See the [Kubernetes docs](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) for the full set.
+
+`hardened-all` replaces the container-level `securityContext` the same way, for every container. That is a real limit when two containers need *different* settings — a sidecar running under its own uid, say, which a pod-level `runAsUser` cannot express. Those go into the consuming overlay's `patches:`, which are applied after all of its `components:` and therefore merge on top of what this component set:
+
+```yaml
+patches:
+- target:
+    kind: Deployment
+    name: myapp
+  patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: myapp
+    spec:
+      template:
+        spec:
+          containers:
+          - name: sidecar        # by name, and merged, so the flags stay
+            securityContext:
+              runAsUser: 101
+```
 
 ## Hardening a whole environment
 
