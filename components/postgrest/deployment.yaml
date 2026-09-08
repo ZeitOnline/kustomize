@@ -29,4 +29,3 @@ spec:
             runAsUser: 0        # must be able to read the certs
           env: []
           volumeMounts: []
-      volumes: []

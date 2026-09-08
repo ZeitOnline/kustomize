@@ -16,5 +16,4 @@ spec:
               name: testrunner-config
               optional: true
           volumeMounts: []
-      volumes: []
       restartPolicy: Never

@@ -28,3 +28,21 @@ metadata:
 ```
 
 This component is commonly used together with the [`migrator`](../migrator/) and [`postgrest`](../postgrest/) components.
+
+## Requirements on the targeted resources
+
+The component appends the `pg-service` volume to the pod spec and mounts it into
+the **first** container (`containers[0]`, plus `initContainers[0]` for
+`pg-services-init`). Because [JSON patches](https://datatracker.ietf.org/doc/html/rfc6902)
+cannot append to a list that doesn't exist, that container needs to declare a
+`volumeMounts:` list — an empty one is enough:
+
+```yaml
+      containers:
+        - name: myapp
+          image: myapp
+          volumeMounts: []
+```
+
+The pod-level `volumes:` list does **not** have to be declared; the component
+creates it when it is missing.
