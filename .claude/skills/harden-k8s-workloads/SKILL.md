@@ -24,7 +24,7 @@ most mistakes here are invisible in the source and obvious in the output.
    A hardening label on the pod template is a no-op.
 4. **A strategic-merge patch listing containers reorders them to match itself.** An overlay patching
    a sidecar can move it to `containers[0]`, where index-based hardening then lands. Prefer
-   `replacements` with `containers.[name=x]` paths, or the `hardened-all` level.
+   `replacements` with a `containers.*` path -- which is how this component sets its flags.
 
 ## Steps
 
@@ -47,51 +47,41 @@ and the overlay then fails to build for reasons unrelated to your change.
   Put it on the workload with a small merge patch instead.
 - While there, migrate deprecated `commonLabels:` to `labels: [{pairs: {...}, includeSelectors: true}]`.
 
-### 3. Baseline for the whole environment
-
-Add a component (not `labels:`, see rule 2) that labels everything unlabelled, and list it
-immediately before `security-config`, both **last** in `components:`:
+### 3. Include the component, last
 
 ```yaml
-# k8s/base/security-baseline/kustomization.yaml
-apiVersion: kustomize.config.k8s.io/v1alpha1
-kind: Component
-patches:
-- target:
-    kind: Deployment          # repeat for Job and CronJob
-    labelSelector: "!security-config"
-  patch: |-
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: ignored           # the target selector decides what is patched
-      labels:
-        security-config: required
+components:
+- ...                                                                # everything else first
+- github.com/ZeitOnline/kustomize/components/security-config?ref=…   # then this
 ```
 
-`!security-config` matches resources without the label, so workloads that ask for a stronger level
-keep it. A plain `labels:` block would overwrite them — a silent downgrade. Per-workload upgrades
-go in the same component *before* the generic patches, which then skip them (selectors are
-evaluated against the current state).
+It labels every workload that does not ask for a level itself `security-config: required`,
+so including it covers the whole overlay (rule 1: only what came before it). Our own
+components -- `postgrest`, `migrator`, `nightwatch` -- declare `hardened` themselves and
+bring the writable paths their containers need, so there is usually nothing else to do.
 
-Roll this out in `staging` first; `production` picks the same component up later with one line.
+Roll it out in `staging` first; `production` gets the same line later.
 
-### 4. Pick a level per workload
+To harden *everything* by default instead, add a project component that stamps `hardened` on
+unlabelled workloads and list it before this one -- see the component README. Use
+`labelSelector: "!security-config"` there, never `labels:`, which would overwrite the
+workloads that asked for `required` because they cannot take more.
+
+### 4. Check the level of each workload
 
 - `required` — `fsGroup: 10000` only. No prerequisites, safe everywhere.
-- `hardened` — plus the three flags on `containers[0]` and a `/tmp` emptyDir. Needs
-  `volumeMounts: []` on that container. Single-container workloads only (rule 4).
-- `hardened-all` — the three flags on **every** container, nothing else. Use it whenever there is a
-  sidecar.
+- `hardened` — plus `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]` and
+  `readOnlyRootFilesystem: true` on **every** container, and a `/tmp` emptyDir on the first
+  one, which therefore needs a `volumeMounts:` list (an empty one will do).
 
-A workload can take the flags if it writes nowhere outside the paths you give it and needs no
-capabilities. Check the container's own start-up behaviour, not just the app: entrypoints that
-render config (nginx templates), tools that want a cache (`uv` without `UV_NO_CACHE`), and
-anything writing a pid file all fail on a read-only root filesystem.
+A workload can take `hardened` if it writes nowhere outside the paths you give it and needs
+no capabilities. Check each container's start-up behaviour, not just the app: entrypoints
+that render config (nginx templates), tools that want a cache (`uv` without `UV_NO_CACHE`)
+and anything writing a pid file all fail on a read-only root filesystem.
 
 ### 5. Give each container its writable paths
 
-`hardened-all` sets flags only. Add an `emptyDir` per path the container writes, mounted by
+Beyond the `/tmp` of the first container, add an `emptyDir` per path a container writes, mounted by
 container **name**, in the base (mounts are a property of the container, not of an environment).
 For an nginx sidecar that is exactly three: `/etc/nginx/conf.d` (the entrypoint renders
 `/etc/nginx/templates/*.template` into it), `/var/run` (pid file), `/var/cache/nginx` (temp files).

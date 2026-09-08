@@ -4,7 +4,7 @@
 # diff the output before/after a change.
 #
 #   ./inventory.sh out.yaml
-#   Deployment/postgrest  hardened-all  pod={"fsGroup":10000}
+#   Deployment/postgrest  hardened  pod={"fsGroup":10000}
 #     postgrest: {"allowPrivilegeEscalation":false,...}  mounts=/tmp /vault/secrets/pg
 #
 # Needs `yq` (the jq wrapper) on PATH.
