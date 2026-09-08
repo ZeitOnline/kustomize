@@ -13,6 +13,38 @@ patches:
     kind: Deployment
     metadata:
       name: security-config-template
+# anything that doesn't ask for a level itself gets the baseline, so that a
+# whole environment is covered by including this component
+- target:
+    kind: Deployment
+    labelSelector: "!security-config"
+  patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ignored   # the target selector decides what is patched
+      labels:
+        security-config: required
+- target:
+    kind: Job
+    labelSelector: "!security-config"
+  patch: |-
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: ignored
+      labels:
+        security-config: required
+- target:
+    kind: CronJob
+    labelSelector: "!security-config"
+  patch: |-
+    apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: ignored
+      labels:
+        security-config: required
 # the pod-level `fsGroup` applies to every level; merging it in keeps any other
 # pod-level `securityContext` settings the target may have
 - path: fsgroup.yaml
