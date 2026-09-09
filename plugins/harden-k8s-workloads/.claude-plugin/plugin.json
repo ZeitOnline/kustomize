@@ -1,0 +1,11 @@
+{
+  "name": "harden-k8s-workloads",
+  "description": "Adopt the 'security-config' and 'nginx-sidecar' components in a project's kustomize overlays, and avoid the ordering traps that make hardening land on the wrong container.",
+  "version": "1.0.0",
+  "author": {
+    "name": "ZeitOnline",
+    "url": "https://github.com/ZeitOnline"
+  },
+  "repository": "https://github.com/ZeitOnline/kustomize",
+  "keywords": ["kubernetes", "kustomize", "hardening", "security"]
+}

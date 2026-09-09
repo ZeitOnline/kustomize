@@ -1,0 +1,34 @@
+# this layer puts an nginx sidecar in front of a service, configured by the
+# project -- see the README
+
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+patches:
+# make sure `.volumes` exists on the pod spec before the JSON patch below
+# appends to it, so that targeted resources don't have to carry a placeholder
+# `volumes: []` themselves; merging an empty list leaves existing volumes
+# untouched
+- target:
+    kind: Deployment
+    labelSelector: nginx-sidecar=required
+  patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ignored   # the target selector decides what is patched
+    spec:
+      template:
+        spec:
+          volumes: []
+# the sidecar runs as a non-root uid (see the README), so it needs the group
+# ownership of its scratch volumes -- 'security-config' sets the same value,
+# and merging leaves any other pod-level setting alone
+- path: fsgroup.yaml
+  target:
+    kind: Deployment
+    labelSelector: nginx-sidecar=required
+- path: deployment.yaml
+  target:
+    kind: Deployment
+    labelSelector: nginx-sidecar=required

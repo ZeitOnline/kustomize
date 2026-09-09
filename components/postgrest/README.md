@@ -34,3 +34,5 @@ components:
 - github.com/ZeitOnline/kustomize/components/migrator?ref=1.11
 - github.com/ZeitOnline/kustomize/components/pg-services?ref=1.11
 ```
+
+The deployment also asks for the [`nginx-sidecar`](../nginx-sidecar/) and [`security-config: hardened`](../security-config/) components. Both labels do nothing unless those components are included.

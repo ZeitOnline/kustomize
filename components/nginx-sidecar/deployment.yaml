@@ -1,0 +1,43 @@
+- op: add
+  path: /spec/template/spec/containers/-
+  value:
+    name: nginx
+    image: nginx
+    readinessProbe:
+      httpGet:
+        path: /rpc/health
+        port: 8080
+    volumeMounts:
+    - name: nginx-config
+      mountPath: /etc/nginx/templates
+      readOnly: true
+    # the entrypoint renders the template into conf.d on startup, writes a pid
+    # file and buffers request bodies -- all of which a read-only root
+    # filesystem needs somewhere to go
+    - name: nginx-conf-d
+      mountPath: /etc/nginx/conf.d
+    - name: nginx-run
+      mountPath: /var/run
+    - name: nginx-cache
+      mountPath: /var/cache/nginx
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: nginx-config
+    configMap:
+      name: nginx-config   # provided by the project
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: nginx-conf-d
+    emptyDir: {}
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: nginx-run
+    emptyDir: {}
+- op: add
+  path: /spec/template/spec/volumes/-
+  value:
+    name: nginx-cache
+    emptyDir: {}

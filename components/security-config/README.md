@@ -116,3 +116,5 @@ patches:
 ```
 
 The `!security-config` selector matches resources that carry no label at all, so workloads that ask for `required` themselves — because they cannot take more — keep it. A plain `labels:` block would overwrite them, and silently harden something that then fails to start.
+
+What is still missing -- `runAsNonRoot`, `seccompProfile`, `initContainers`, enforcement on the namespace -- is collected in [ROADMAP.md](ROADMAP.md).
