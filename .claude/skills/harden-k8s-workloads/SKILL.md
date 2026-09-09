@@ -83,16 +83,23 @@ and anything writing a pid file all fail on a read-only root filesystem.
 
 Beyond the `/tmp` of the first container, add an `emptyDir` per path a container writes, mounted by
 container **name**, in the base (mounts are a property of the container, not of an environment).
-For an nginx sidecar that is exactly three: `/etc/nginx/conf.d` (the entrypoint renders
-`/etc/nginx/templates/*.template` into it), `/var/run` (pid file), `/var/cache/nginx` (temp files).
-`fsGroup` makes those writable for a non-root uid.
+An `emptyDir` belongs to `root:root` unless the pod sets `fsGroup`, so a non-root container can
+only write to it once something does — `security-config` at any level, or the component that owns
+the container.
+
+For an nginx sidecar this is `/etc/nginx/conf.d` (the entrypoint renders
+`/etc/nginx/templates/*.template` into it), `/var/run` (pid file) and `/var/cache/nginx` (temp
+files) — but that one is already done: the [`nginx-sidecar`](../../../components/nginx-sidecar/)
+component brings the container, the port, those three paths and the `fsGroup` for them. List it
+**before** `security-config`, or the container it adds arrives too late to be hardened (rule 1).
 
 ### 6. Move sidecars off privileged ports
 
 `capabilities.drop: [ALL]` removes `NET_BIND_SERVICE`, and a root master cannot setuid its workers
-either, so an nginx sidecar needs port 8080 **and** `runAsUser: <image uid>` (101 for the official
-nginx image). The uid goes in the overlay's `patches:` (rule 2), or into the image with a `USER`
-line if you would otherwise repeat it per environment.
+either, so an nginx sidecar needs port 8080 **and** a non-root uid. Put the uid in the **image**
+(`USER 101` for the official nginx images): a container-level `runAsUser` is owned by
+`security-config`, which replaces that map, so in the manifests it can only live in the overlay's
+`patches:` — once per environment, and quietly load-bearing.
 
 **Grep for the old port across the whole repo** — it hides in more places than expected:
 
@@ -122,3 +129,7 @@ and watch for `CrashLoopBackOff`.
 - `allowPrivilegeEscalation: "false"` (a string) → `replacements` stringify scalars; copy the whole
   `securityContext` map instead of single fields.
 - Two components appending to `volumes` → the earlier one still needs the list to exist.
+- A non-root container cannot write its `emptyDir` → nothing set `fsGroup` for that pod. Shows up
+  in the overlay that doesn't include `security-config`, e.g. `devel`.
+- `replace operation does not apply: doc is missing key` → `op: replace` needs the key to exist,
+  which kustomize enforces from 5.5 on. `op: add` creates or replaces.
