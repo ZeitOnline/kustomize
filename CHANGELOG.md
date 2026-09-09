@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.3.0](https://github.com/ZeitOnline/kustomize/compare/2.2.1...2.3.0) (2026-09-09)
+
+
+### Features
+
+* add 'nginx-sidecar' component ([#42](https://github.com/ZeitOnline/kustomize/issues/42)) ([5285bde](https://github.com/ZeitOnline/kustomize/commit/5285bde962ca58e2859e6dfab399d086c7a7d55a))
+* add 'security-config' component to apply "best practices" ([#41](https://github.com/ZeitOnline/kustomize/issues/41)) ([f24af92](https://github.com/ZeitOnline/kustomize/commit/f24af92f46d1c167350803aed23ed5a5d7e05a78))
+* add read rights to group users ([#38](https://github.com/ZeitOnline/kustomize/issues/38)) ([cb39676](https://github.com/ZeitOnline/kustomize/commit/cb39676a50165975695fb2075f0417b5f18afc7e))
+* **pg-services:** create the pod's `volumes` list when it is missing ([#40](https://github.com/ZeitOnline/kustomize/issues/40)) ([b15d393](https://github.com/ZeitOnline/kustomize/commit/b15d393b6e800739f5d2b2458c20e7c617f0bcd5))
+
 ## [2.2.1](https://github.com/ZeitOnline/kustomize/compare/2.2.0...2.2.1) (2026-08-11)
 
 
