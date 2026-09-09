@@ -52,6 +52,8 @@ FROM nginx:1.31.3 AS nginx
 USER 101
 ```
 
+And since an `emptyDir` belongs to `root:root` unless the pod asks otherwise, the component sets `fsGroup: 10000` — the same value [`security-config`](../security-config/) uses — so that uid can write to the scratch volumes it gets. Both patches merge, so a pod-level `securityContext` of your own survives either way.
+
 **A port above 1024**, for the same reason: `NET_BIND_SERVICE` is gone. The configuration therefore says `listen 8080`, and everything pointing at it — the `Service`'s `targetPort`, a `HealthCheckPolicy`'s `httpHealthCheck.port`, an `Ingress` backend — has to agree. It hides in more places than one expects.
 
 ## Order

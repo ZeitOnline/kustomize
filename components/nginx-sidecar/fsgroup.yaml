@@ -1,0 +1,9 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ignored   # the target selector decides what is patched
+spec:
+  template:
+    spec:
+      securityContext:
+        fsGroup: 10000

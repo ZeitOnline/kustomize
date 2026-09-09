@@ -21,6 +21,13 @@ patches:
       template:
         spec:
           volumes: []
+# the sidecar runs as a non-root uid (see the README), so it needs the group
+# ownership of its scratch volumes -- 'security-config' sets the same value,
+# and merging leaves any other pod-level setting alone
+- path: fsgroup.yaml
+  target:
+    kind: Deployment
+    labelSelector: nginx-sidecar=required
 - path: deployment.yaml
   target:
     kind: Deployment
