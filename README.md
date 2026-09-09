@@ -13,7 +13,7 @@ This repository contains reusable [kustomize](https://kustomize.io/) components 
 - [pg-services](components/pg-services/): provides database credentials as PostgreSQL "[connection service files](https://www.postgresql.org/docs/17/libpq-pgservice.html)"
 - [postgresql](components/postgresql/): provides PostgreSQL database deployments intended for testing
 - [postgrest](components/postgrest/): provides [PostgREST](https://docs.postgrest.org/) deployments
-- [security-config](components/security-config/): sets pod-level `fsGroup: 10000`, optionally with full container hardening (dropped capabilities, read-only root filesystem, `/tmp` volume)
+- [security-config](components/security-config/): provides container hardening (dropped capabilities, r/o filesystem, `/tmp` volume)
 - [testrunner](components/testrunner/): run project test suites in Kubernetes
 - [wait-for-migrations](components/wait-for-migrations/): waits for database migrations to complete before starting dependent services
 
