@@ -1,0 +1,19 @@
+# Carrier for the container-level settings below. `replacements` can only copy a
+# value out of a resource, and it has to be typed correctly (`false` and `true`
+# are booleans here, not strings), so the values live in a Deployment that is
+# removed from the output again by the parent component.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: security-config-template
+spec:
+  template:
+    spec:
+      containers:
+      - name: values
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true

@@ -6,6 +6,7 @@ metadata:
   labels:
     app: migrator
     pg-services: required
+    security-config: hardened   # migration state lives in the database
     kustomize.toolkit.fluxcd.io/force: enabled
 spec:
   backoffLimit: 0       # no retries please

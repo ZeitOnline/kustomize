@@ -44,6 +44,8 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    security-config: hardened
   name: nightwatch
 spec:
   selector:
@@ -80,8 +82,6 @@ spec:
           - name: nightwatch-helpers
             mountPath: /helpers
             readOnly: true
-          - mountPath: /tmp # to support readOnlyRootFilesystem
-            name: tmp
           env:
           - name: NIGHTWATCH_ENVIRONMENT
             value: staging
@@ -97,15 +97,7 @@ spec:
           - secretRef:
               name: nightwatch-secrets
               optional: true
-          securityContext:
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop:
-                - "ALL"
       volumes:
       - name: nightwatch-helpers
         configMap:
           name: nightwatch-helpers
-      - name: tmp
-        emptyDir:
-          medium: Memory

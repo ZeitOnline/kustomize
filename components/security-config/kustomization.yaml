@@ -1,0 +1,119 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+components:
+- flags
+
+patches:
+# drop the carrier the 'flags' component needs for its `replacements`; the
+# patches of a component run after the components it includes
+- patch: |-
+    $patch: delete
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: security-config-template
+# anything that doesn't ask for a level itself gets the baseline, so that a
+# whole environment is covered by including this component
+- target:
+    kind: Deployment
+    labelSelector: "!security-config"
+  patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ignored   # the target selector decides what is patched
+      labels:
+        security-config: required
+- target:
+    kind: Job
+    labelSelector: "!security-config"
+  patch: |-
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: ignored
+      labels:
+        security-config: required
+- target:
+    kind: CronJob
+    labelSelector: "!security-config"
+  patch: |-
+    apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: ignored
+      labels:
+        security-config: required
+# the pod-level `fsGroup` applies to every level; merging it in keeps any other
+# pod-level `securityContext` settings the target may have
+- path: fsgroup.yaml
+  target:
+    kind: Deployment
+    labelSelector: security-config in (required, hardened)
+- path: fsgroup.yaml
+  target:
+    kind: Job
+    labelSelector: security-config in (required, hardened)
+- path: fsgroup-cronjob.yaml
+  target:
+    kind: CronJob
+    labelSelector: security-config in (required, hardened)
+# make sure `.volumes` exists on the pod spec before `tmp.yaml` appends the
+# `tmp` volume to it, so that targeted resources don't have to carry a
+# placeholder `volumes: []` themselves; merging an empty list leaves existing
+# volumes untouched
+- target:
+    kind: Deployment
+    labelSelector: security-config=hardened
+  patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ignored
+    spec:
+      template:
+        spec:
+          volumes: []
+- target:
+    kind: Job
+    labelSelector: security-config=hardened
+  patch: |-
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: ignored
+    spec:
+      template:
+        spec:
+          volumes: []
+- target:
+    kind: CronJob
+    labelSelector: security-config=hardened
+  patch: |-
+    apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: ignored
+    spec:
+      jobTemplate:
+        spec:
+          template:
+            spec:
+              volumes: []
+# scratch space for the read-only root filesystem, mounted into the *first*
+# container -- the one place where an index is unavoidable, and harmless: a
+# spare /tmp is not a hazard. Containers that write elsewhere, and workloads
+# whose first container is not the interesting one, declare their own.
+- path: tmp.yaml
+  target:
+    kind: Deployment
+    labelSelector: security-config=hardened
+- path: tmp.yaml
+  target:
+    kind: Job
+    labelSelector: security-config=hardened
+- path: tmp-cronjob.yaml
+  target:
+    kind: CronJob
+    labelSelector: security-config=hardened
