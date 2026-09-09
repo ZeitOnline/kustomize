@@ -1,5 +1,5 @@
-# this layer puts an nginx sidecar in front of a service, to translate the
-# 'zeit_sso' cookie into an `Authorization` header -- see the README
+# this layer puts an nginx sidecar in front of a service, configured by the
+# project -- see the README
 
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component

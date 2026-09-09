@@ -1,12 +1,12 @@
 # 'nginx-sidecar' component
 
-This component adds an nginx sidecar to a `Deployment`, which translates the `zeit_sso` cookie into an `Authorization` header so that a [PostgREST](https://docs.postgrest.org/) service behind it sees a bearer token. It listens on **8080** and brings the writable paths nginx needs, so it works under [`security-config: hardened`](../security-config/).
+This component adds an nginx sidecar to a `Deployment`, in front of whatever the pod serves — rewriting requests, translating headers, terminating something. It listens on **8080** and brings the writable paths nginx needs, so it works under [`security-config: hardened`](../security-config/).
 
 It targets any `Deployment` that carries the `nginx-sidecar=required` label.
 
 ## Setup
 
-The nginx configuration itself stays with the project — it is the part that knows the service's routes. Provide it as a `nginx-config` ConfigMap with a `default.conf.template` key; the image's entrypoint renders it into `/etc/nginx/conf.d/` on startup, substituting `${AUTH_COOKIE_NAME}`.
+What the sidecar actually does stays with the project: provide the configuration as a `nginx-config` ConfigMap with a `default.conf.template` key. The image's entrypoint renders it into `/etc/nginx/conf.d/` on startup, substituting any `${VARIABLE}` from the container's environment — which the project adds to the container in its own `patches:`, since only it knows what its configuration reads.
 
 **`k8s/base/myapp/kustomization.yaml`**
 ```yaml
@@ -39,7 +39,27 @@ patches:
     - op: replace
       path: /spec/ports/0/targetPort
       value: 8080
+# whatever the configuration substitutes
+- target:
+    kind: Deployment
+    name: myapp
+  patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: myapp
+    spec:
+      template:
+        spec:
+          containers:
+          - name: myapp    # first, so the merge does not reorder `containers`
+          - name: nginx
+            env:
+            - name: UPSTREAM_TIMEOUT
+              value: "5s"
 ```
+
+Mind the first entry of that last patch: a strategic merge reorders `containers` to match itself, and moving the sidecar to index 0 is how it ends up with the `/tmp` meant for the application container.
 
 The `nginx` image name has to be mapped to the project's own image (`images:` in the overlay), the way `postgrest` and `migrator` are.
 
@@ -60,4 +80,4 @@ And since an `emptyDir` belongs to `root:root` unless the pod asks otherwise, th
 
 List this component **before** [`security-config`](../security-config/), so that the sidecar it adds is still hardened along with the rest of the pod. A component only patches the resources accumulated before it.
 
-The readiness probe defaults to PostgREST's `/rpc/health`; a project fronting something else overrides it in its own `patches:`.
+The readiness probe defaults to `/rpc/health`, which is what our [PostgREST](../postgrest/) deployments answer; anything else overrides it in its own `patches:`.

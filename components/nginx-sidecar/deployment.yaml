@@ -3,11 +3,6 @@
   value:
     name: nginx
     image: nginx
-    env:
-    # the cookie the configuration reads the token from; override per
-    # environment, e.g. 'zeit_staging_sso_201501'
-    - name: AUTH_COOKIE_NAME
-      value: zeit_sso_201501
     readinessProbe:
       httpGet:
         path: /rpc/health
