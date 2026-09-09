@@ -8,6 +8,7 @@ metadata:
     pg-services: required
     wait-for-migrations: required
     security-config: hardened
+    nginx-sidecar: required
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
