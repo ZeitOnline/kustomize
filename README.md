@@ -18,3 +18,16 @@ This repository contains reusable [kustomize](https://kustomize.io/) components 
 - [wait-for-migrations](components/wait-for-migrations/): waits for database migrations to complete before starting dependent services
 
 Each component is located in its dedicated subdirectory under [`components/`](components/).
+
+## Hardening skill
+
+The steps for rolling out [`security-config`](components/security-config/) and
+[`nginx-sidecar`](components/nginx-sidecar/) in a project — and the kustomize ordering rules that
+make it trickier than it looks — are written up as a Claude Code skill in
+[`plugins/harden-k8s-workloads/`](plugins/harden-k8s-workloads/). Install it from this repository
+to have it available in the projects that need it:
+
+```shell
+/plugin marketplace add ZeitOnline/kustomize
+/plugin install harden-k8s-workloads@zeitonline-kustomize
+```
