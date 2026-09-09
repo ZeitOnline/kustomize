@@ -1,6 +1,6 @@
 ---
 name: harden-k8s-workloads
-description: Adopt the ZeitOnline kustomize 'security-config' component in a project's k8s overlays - harden every Deployment/Job/CronJob of an environment (fsGroup, dropped capabilities, read-only root filesystem), move sidecars off privileged ports, and fix the label/ordering traps that make kustomize apply hardening to the wrong container. Use when asked to harden a project's Kubernetes setup, to roll out 'security-config', or when a hardened workload crash-loops after such a change.
+description: Adopt the ZeitOnline kustomize 'security-config' and 'nginx-sidecar' components in a project's k8s overlays - harden every Deployment/Job/CronJob of an environment (fsGroup, dropped capabilities, read-only root filesystem), move sidecars off privileged ports, and fix the label/ordering traps that make kustomize apply hardening to the wrong container. Use when asked to harden a project's Kubernetes setup, to roll out 'security-config', or when a hardened workload crash-loops after such a change.
 ---
 
 # Hardening a project's Kubernetes workloads
