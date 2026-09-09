@@ -89,7 +89,7 @@ the container.
 
 For an nginx sidecar this is `/etc/nginx/conf.d` (the entrypoint renders
 `/etc/nginx/templates/*.template` into it), `/var/run` (pid file) and `/var/cache/nginx` (temp
-files) — but that one is already done: the [`nginx-sidecar`](../../../components/nginx-sidecar/)
+files) — but that one is already done: the [`nginx-sidecar`](https://github.com/ZeitOnline/kustomize/tree/main/components/nginx-sidecar)
 component brings the container, the port, those three paths and the `fsGroup` for them. List it
 **before** `security-config`, or the container it adds arrives too late to be hardened (rule 1).
 

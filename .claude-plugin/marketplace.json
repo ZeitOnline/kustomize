@@ -1,0 +1,14 @@
+{
+  "name": "zeitonline-kustomize",
+  "owner": {
+    "name": "ZeitOnline",
+    "url": "https://github.com/ZeitOnline/kustomize"
+  },
+  "plugins": [
+    {
+      "name": "harden-k8s-workloads",
+      "source": "./plugins/harden-k8s-workloads",
+      "description": "How to harden a project's Kubernetes workloads with the components in this repository."
+    }
+  ]
+}
