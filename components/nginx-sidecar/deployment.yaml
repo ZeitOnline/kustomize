@@ -6,7 +6,7 @@
     readinessProbe:
       httpGet:
         path: /rpc/health
-        port: 8080
+        port: 8000
     volumeMounts:
     - name: nginx-config
       mountPath: /etc/nginx/templates

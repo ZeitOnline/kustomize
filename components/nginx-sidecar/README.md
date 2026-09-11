@@ -1,6 +1,6 @@
 # 'nginx-sidecar' component
 
-This component adds an nginx sidecar to a `Deployment`, in front of whatever the pod serves — rewriting requests, translating headers, terminating something. It listens on **8080** and brings the writable paths nginx needs, so it works under [`security-config: hardened`](../security-config/).
+This component adds an nginx sidecar to a `Deployment`, in front of whatever the pod serves — rewriting requests, translating headers, terminating something. It listens on **8000** and brings the writable paths nginx needs, so it works under [`security-config: hardened`](../security-config/).
 
 It targets any `Deployment` that carries the `nginx-sidecar=required` label.
 
@@ -31,14 +31,14 @@ patches:
       name: myapp
       labels:
         nginx-sidecar: required
-# the sidecar listens on 8080, so point the Service at it
+# the sidecar listens on 8000, so point the Service at it
 - target:
     kind: Service
     name: myapp
   patch: |-
     - op: replace
       path: /spec/ports/0/targetPort
-      value: 8080
+      value: 8000
 # whatever the configuration substitutes
 - target:
     kind: Deployment
@@ -74,7 +74,7 @@ USER 101
 
 And since an `emptyDir` belongs to `root:root` unless the pod asks otherwise, the component sets `fsGroup: 10000` — the same value [`security-config`](../security-config/) uses — so that uid can write to the scratch volumes it gets. Both patches merge, so a pod-level `securityContext` of your own survives either way.
 
-**A port above 1024**, for the same reason: `NET_BIND_SERVICE` is gone. The configuration therefore says `listen 8080`, and everything pointing at it — the `Service`'s `targetPort`, a `HealthCheckPolicy`'s `httpHealthCheck.port`, an `Ingress` backend — has to agree. It hides in more places than one expects.
+**A port above 1024**, for the same reason: `NET_BIND_SERVICE` is gone. It is 8000 rather than the more obvious 8080 so that the port stays free for whatever fronts the sidecar — a validating gateway, say, which is the outermost thing in the pod and the one an operator expects on 8080. The configuration therefore says `listen 8000`, and everything pointing at it — the `Service`'s `targetPort`, a `HealthCheckPolicy`'s `httpHealthCheck.port`, an `Ingress` backend — has to agree. It hides in more places than one expects.
 
 ## Order
 

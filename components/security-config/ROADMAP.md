@@ -36,7 +36,7 @@ order; the first item gates the rest.
   decide it in staging rather than on paper.
 - **The nginx sidecar's probe** still defaults to PostgREST's `/rpc/health`. If a second consumer
   fronts something else, that default should probably go. Switching the image to a hardened nginx
-  (non-root and 8080 out of the box) would also shrink the requirements the README lists.
+  (non-root and an unprivileged port out of the box) would also shrink the requirements the README lists.
 
 ## Loose ends found on the way
 

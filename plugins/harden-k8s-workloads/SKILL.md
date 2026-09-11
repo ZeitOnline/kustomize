@@ -96,7 +96,7 @@ component brings the container, the port, those three paths and the `fsGroup` fo
 ### 6. Move sidecars off privileged ports
 
 `capabilities.drop: [ALL]` removes `NET_BIND_SERVICE`, and a root master cannot setuid its workers
-either, so an nginx sidecar needs port 8080 **and** a non-root uid. Put the uid in the **image**
+either, so an nginx sidecar needs an unprivileged port **and** a non-root uid. Put the uid in the **image**
 (`USER 101` for the official nginx images): a container-level `runAsUser` is owned by
 `security-config`, which replaces that map, so in the manifests it can only live in the overlay's
 `patches:` — once per environment, and quietly load-bearing.
@@ -110,7 +110,7 @@ either, so an nginx sidecar needs port 8080 **and** a non-root uid. Put the uid 
 | container | `readinessProbe`/`livenessProbe` `port` |
 | `HealthCheckPolicy` (networking.gke.io) | `httpHealthCheck.port` — easy to miss, breaks the LB health check |
 | `BackendConfig`, `HTTPRoute`, Ingress | backend/service ports |
-| tests | a fixture rewriting the config; `'listen 80'` is a prefix of `'listen 8080'`, so use a pattern |
+| tests | a fixture rewriting the config; `'listen 80'` is a prefix of `'listen 8000'`, so use a pattern |
 
 ### 7. Verify
 
