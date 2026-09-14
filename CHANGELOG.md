@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/ZeitOnline/kustomize/compare/2.3.0...2.4.0) (2026-09-14)
+
+
+### Features
+
+* **nginx-sidecar:** listen on 8000 instead of 8080 ([#43](https://github.com/ZeitOnline/kustomize/issues/43)) ([a0415f6](https://github.com/ZeitOnline/kustomize/commit/a0415f60652caf7eed1de7a145ec7e902183f4e5))
+
 ## [2.3.0](https://github.com/ZeitOnline/kustomize/compare/2.2.1...2.3.0) (2026-09-09)
 
 
