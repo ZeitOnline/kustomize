@@ -6,7 +6,7 @@ This repository contains reusable [kustomize](https://kustomize.io/) components 
 - [db-sync](components/db-sync/): handles PostgreSQL database "syncs", typically between 'staging' and 'devel'
 - [db-upgrade](components/db-upgrade/): handles PostgreSQL upgrades and migrations between instances
 - [gcs-bucket-proxy](components/gcs-bucket-proxy/): provides a proxy for easy access to Google Cloud Storage buckets
-- [migrator](components/migrator/): runs database migration jobs using [alembic](https://alembic.sqlalchemy.org)
+- [migrator](components/migrator/): runs database migration jobs using [alembic](https://alembic.sqlalchemy.org) or [goose](https://pressly.github.io/goose/)
 - [nginx-sidecar](components/nginx-sidecar/): puts an nginx sidecar, configured by the project, in front of a service
 - [nightwatch](components/nightwatch/): integrates our "[Nachtwache](https://docs.zeit.de/monitoring/howto/nightwatch/)" tests
 - [oauth2-proxy](components/oauth2-proxy/): integrates [OAuth2 Proxy](https://oauth2-proxy.github.io/oauth2-proxy/) to authenticate against [Keycloak](https://docs.zeit.de/keycloak/)

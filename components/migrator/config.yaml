@@ -3,4 +3,5 @@ kind: ConfigMap
 metadata:
   name: migrator-config
   labels:
+    migrator: required
     pg-services: required
