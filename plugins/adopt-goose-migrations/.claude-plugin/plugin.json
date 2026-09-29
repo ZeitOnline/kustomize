@@ -1,0 +1,11 @@
+{
+  "name": "adopt-goose-migrations",
+  "description": "Move a project's migrations from alembic to goose and run them with the 'migrator' component, past the ordering, versioning and service-file traps.",
+  "version": "1.0.0",
+  "author": {
+    "name": "ZeitOnline",
+    "url": "https://github.com/ZeitOnline"
+  },
+  "repository": "https://github.com/ZeitOnline/kustomize",
+  "keywords": ["kubernetes", "kustomize", "postgresql", "migrations", "goose"]
+}
