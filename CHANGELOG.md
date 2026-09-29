@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/ZeitOnline/kustomize/compare/2.4.0...2.5.0) (2026-09-29)
+
+
+### Features
+
+* **migrator:** support 'goose' as an alternative to alembic ([#45](https://github.com/ZeitOnline/kustomize/issues/45)) ([1c6dafd](https://github.com/ZeitOnline/kustomize/commit/1c6dafd8031c2536a58449b2ad2ac18fb09bf43c))
+
 ## [2.4.0](https://github.com/ZeitOnline/kustomize/compare/2.3.0...2.4.0) (2026-09-14)
 
 
