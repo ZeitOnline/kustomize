@@ -5,6 +5,7 @@ metadata:
   name: migrator
   labels:
     app: migrator
+    migrator: required
     pg-services: required
     security-config: hardened   # migration state lives in the database
     kustomize.toolkit.fluxcd.io/force: enabled

@@ -1,0 +1,42 @@
+# this layer switches the migrator -- and anything waiting on it --
+# from alembic over to goose
+
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+patches:
+- path: config.yaml
+  target:
+    kind: ConfigMap
+    labelSelector: migrator=required
+- target:
+    kind: Job
+    labelSelector: migrator=required
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/command
+      value:
+        - goose
+        - up
+# the helper of the 'wait-for-migrations' component asks alembic by default;
+# both patches do nothing unless that component is included as well
+- path: helpers.yaml
+  target:
+    kind: ConfigMap
+    name: wait-for-migrations
+- target:
+    kind: Deployment
+    labelSelector: wait-for-migrations=required
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/initContainers/0/command
+      value:
+        - sh
+        - /helpers/wait.sh
+    # the helper inherits the environment of the container it waits for,
+    # which knows how to reach the database, but not about goose
+    - op: add
+      path: /spec/template/spec/initContainers/0/envFrom/-
+      value:
+        configMapRef:
+          name: migrator-config
