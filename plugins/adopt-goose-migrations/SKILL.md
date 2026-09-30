@@ -165,11 +165,27 @@ soak; see the [`harden-k8s-workloads`](../harden-k8s-workloads/) skill.
 ### 6. Seed the bookkeeping of existing databases
 
 goose records what it has applied in `goose_db_version`, and has no `stamp` command. Before its
-first run against a database that already carries the schema, mark everything up to the last
-hand-applied migration as done — `stamp.sh` in this skill directory does it. Getting this wrong is
-loud rather than silent: goose tries to create tables that exist and the job fails.
+first run against a database that already carries the schema, mark the migrations it already has
+as done — `stamp.sh` in this skill directory does it. Getting this wrong is loud rather than
+silent: goose replays from the beginning and the job fails on the first migration, typically with
+something already existing.
 
-Check the database really is at that state first, with the `PGDIFF` half of the migration test.
+Which version to stamp up to depends on where the database stands, and this is the one step that
+cannot be worked out from the repository alone:
+
+- **Coming from alembic**, `alembic_version` holds the revision the database is at. Map it to the
+  migration that revision became and stamp up to there — usually every one of them, since the
+  databases are at head. Drop `alembic_version` afterwards, or it lingers in the schema and turns
+  up as a difference the next time anything compares dumps.
+- **Coming from SQL applied by hand**, stamp up to the last migration someone actually ran, which
+  is a judgement call rather than a lookup.
+
+Either way, confirm the database really is at that state first, with the `PGDIFF` half of the
+migration test. Stamping too far is the dangerous direction: those migrations are then skipped
+silently and the schema quietly diverges, where stamping too short merely fails loudly.
+
+This is a one-off per database, so it belongs in the project's runbook next to the job, not in a
+migration.
 
 ### 7. Verify
 
