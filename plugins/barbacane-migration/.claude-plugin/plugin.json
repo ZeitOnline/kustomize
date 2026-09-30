@@ -1,0 +1,11 @@
+{
+  "name": "barbacane-migration",
+  "description": "Put a Barbacane gateway in front of a PostgREST service, in the test suite and as a sidecar, past the contract, header and routing traps.",
+  "version": "1.0.0",
+  "author": {
+    "name": "ZeitOnline",
+    "url": "https://github.com/ZeitOnline"
+  },
+  "repository": "https://github.com/ZeitOnline/kustomize",
+  "keywords": ["kubernetes", "kustomize", "postgrest", "openapi", "gateway", "barbacane"]
+}
