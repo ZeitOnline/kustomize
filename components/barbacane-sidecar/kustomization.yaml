@@ -1,0 +1,11 @@
+# this layer puts a Barbacane gateway in front of a service, validating every
+# request against the project's OpenAPI contract -- see the README
+
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+patches:
+- path: deployment.yaml
+  target:
+    kind: Deployment
+    labelSelector: barbacane-sidecar=required
