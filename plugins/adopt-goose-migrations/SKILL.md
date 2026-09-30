@@ -52,6 +52,12 @@ What changes per file:
 Keep the timestamps in the order the revisions were actually applied. They are the only ordering
 goose has, and a file that sorts before one already applied in production will never run.
 
+Dropping `alembic` from the dependencies takes **sqlalchemy** with it. If anything else imports it
+— a test `conftest.py` reaching into the database directly is the usual case — declare it
+explicitly before removing alembic, and hold it at the major the project was actually getting:
+sqlalchemy 2.1 defaults `postgresql://` to psycopg 3, so a project on psycopg2 fails at import,
+with nothing to connect it to the migrations.
+
 Two things that are easy to miss when the project ran its SQL by hand rather than through alembic:
 
 - **Roles are cluster-global**, so `CREATE ROLE` in a migration fails the second time the job runs
@@ -91,9 +97,11 @@ FROM goose AS migrator
 COPY migrations /migrations
 ```
 
-`GOOSE_MIGRATION_DIR` defaults to `/migrations`, which is why the migrations go there and not
-under `/app`. If a test image inherits from the migrator and runs the suite from the repo layout,
-give it its own copy rather than moving this one.
+`GOOSE_MIGRATION_DIR` defaults to `/migrations`, which is where the migrations go if the image has
+no layout of its own. If it has one — a non-root user with a home directory, or a test image that
+inherits from the migrator and runs the suite from the repo layout — leave the files where they
+are and point the setting at them instead, from the project component below. That is one line
+against a second copy of the migrations and a set of ownership questions.
 
 **If the job does more than migrate** — recreating views and grants on every deploy, say — keep
 that script and override the component's `goose up` from a small project component:
@@ -110,7 +118,15 @@ patches:
   patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/command
-      value: [sh, /migrations/migrate.sh]
+      value: [sh, migrations/migrate.sh]
+# only if the image keeps its own layout, see above
+- target:
+    kind: ConfigMap
+    labelSelector: migrator=required
+  patch: |-
+    - op: replace
+      path: /data/GOOSE_MIGRATION_DIR
+      value: /app/migrations
 ```
 
 listed after the `goose` layer. The layer still earns its place: the `GOOSE_*` settings and the
