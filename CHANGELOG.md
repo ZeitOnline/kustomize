@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.0](https://github.com/ZeitOnline/kustomize/compare/2.5.0...2.6.0) (2026-09-30)
+
+
+### Features
+
+* add 'barbacane-sidecar' component ([#49](https://github.com/ZeitOnline/kustomize/issues/49)) ([52bc8b3](https://github.com/ZeitOnline/kustomize/commit/52bc8b3010d89aaaf3f2d4b646aafe38d423ed34))
+
 ## [2.5.0](https://github.com/ZeitOnline/kustomize/compare/2.4.0...2.5.0) (2026-09-29)
 
 
