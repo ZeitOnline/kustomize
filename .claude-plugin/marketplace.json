@@ -9,6 +9,11 @@
       "name": "harden-k8s-workloads",
       "source": "./plugins/harden-k8s-workloads",
       "description": "How to harden a project's Kubernetes workloads with the components in this repository."
+    },
+    {
+      "name": "adopt-goose-migrations",
+      "source": "./plugins/adopt-goose-migrations",
+      "description": "How to move a project's database migrations to goose and run them with the components in this repository."
     }
   ]
 }

@@ -19,15 +19,28 @@ This repository contains reusable [kustomize](https://kustomize.io/) components 
 
 Each component is located in its dedicated subdirectory under [`components/`](components/).
 
-## Hardening skill
+## Skills
 
-The steps for rolling out [`security-config`](components/security-config/) and
-[`nginx-sidecar`](components/nginx-sidecar/) in a project — and the kustomize ordering rules that
-make it trickier than it looks — are written up as a Claude Code skill in
-[`plugins/harden-k8s-workloads/`](plugins/harden-k8s-workloads/). Install it from this repository
-to have it available in the projects that need it:
+Two workflows that are fiddlier than they look are written up as Claude Code skills under
+[`plugins/`](plugins/). Install them from this repository to have them available in the projects
+that need them:
 
 ```shell
 /plugin marketplace add ZeitOnline/kustomize
 /plugin install harden-k8s-workloads@zeitonline-kustomize
+/plugin install adopt-goose-migrations@zeitonline-kustomize
 ```
+
+### Hardening skill
+
+The steps for rolling out [`security-config`](components/security-config/) and
+[`nginx-sidecar`](components/nginx-sidecar/) in a project — and the kustomize ordering rules that
+make it trickier than it looks — are written up as a Claude Code skill in
+[`plugins/harden-k8s-workloads/`](plugins/harden-k8s-workloads/).
+
+### Migration skill
+
+Converting a project's migrations to [goose](https://pressly.github.io/goose/) and running them
+with the [`migrator`](components/migrator/) component — including the version jump, the job's
+bookkeeping and the connection service file — is written up in
+[`plugins/adopt-goose-migrations/`](plugins/adopt-goose-migrations/).
