@@ -52,6 +52,12 @@ What changes per file:
 Keep the timestamps in the order the revisions were actually applied. They are the only ordering
 goose has, and a file that sorts before one already applied in production will never run.
 
+Dropping `alembic` from the dependencies takes **sqlalchemy** with it. If anything else imports it
+— a test `conftest.py` reaching into the database directly is the usual case — declare it
+explicitly before removing alembic, and hold it at the major the project was actually getting:
+sqlalchemy 2.1 defaults `postgresql://` to psycopg 3, so a project on psycopg2 fails at import,
+with nothing to connect it to the migrations.
+
 Two things that are easy to miss when the project ran its SQL by hand rather than through alembic:
 
 - **Roles are cluster-global**, so `CREATE ROLE` in a migration fails the second time the job runs
@@ -91,9 +97,11 @@ FROM goose AS migrator
 COPY migrations /migrations
 ```
 
-`GOOSE_MIGRATION_DIR` defaults to `/migrations`, which is why the migrations go there and not
-under `/app`. If a test image inherits from the migrator and runs the suite from the repo layout,
-give it its own copy rather than moving this one.
+`GOOSE_MIGRATION_DIR` defaults to `/migrations`, which is where the migrations go if the image has
+no layout of its own. If it has one — a non-root user with a home directory, or a test image that
+inherits from the migrator and runs the suite from the repo layout — leave the files where they
+are and point the setting at them instead, from the project component below. That is one line
+against a second copy of the migrations and a set of ownership questions.
 
 **If the job does more than migrate** — recreating views and grants on every deploy, say — keep
 that script and override the component's `goose up` from a small project component:
@@ -110,7 +118,15 @@ patches:
   patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/command
-      value: [sh, /migrations/migrate.sh]
+      value: [sh, migrations/migrate.sh]
+# only if the image keeps its own layout, see above
+- target:
+    kind: ConfigMap
+    labelSelector: migrator=required
+  patch: |-
+    - op: replace
+      path: /data/GOOSE_MIGRATION_DIR
+      value: /app/migrations
 ```
 
 listed after the `goose` layer. The layer still earns its place: the `GOOSE_*` settings and the
@@ -149,11 +165,27 @@ soak; see the [`harden-k8s-workloads`](../harden-k8s-workloads/) skill.
 ### 6. Seed the bookkeeping of existing databases
 
 goose records what it has applied in `goose_db_version`, and has no `stamp` command. Before its
-first run against a database that already carries the schema, mark everything up to the last
-hand-applied migration as done — `stamp.sh` in this skill directory does it. Getting this wrong is
-loud rather than silent: goose tries to create tables that exist and the job fails.
+first run against a database that already carries the schema, mark the migrations it already has
+as done — `stamp.sh` in this skill directory does it. Getting this wrong is loud rather than
+silent: goose replays from the beginning and the job fails on the first migration, typically with
+something already existing.
 
-Check the database really is at that state first, with the `PGDIFF` half of the migration test.
+Which version to stamp up to depends on where the database stands, and this is the one step that
+cannot be worked out from the repository alone:
+
+- **Coming from alembic**, `alembic_version` holds the revision the database is at. Map it to the
+  migration that revision became and stamp up to there — usually every one of them, since the
+  databases are at head. Drop `alembic_version` afterwards, or it lingers in the schema and turns
+  up as a difference the next time anything compares dumps.
+- **Coming from SQL applied by hand**, stamp up to the last migration someone actually ran, which
+  is a judgement call rather than a lookup.
+
+Either way, confirm the database really is at that state first, with the `PGDIFF` half of the
+migration test. Stamping too far is the dangerous direction: those migrations are then skipped
+silently and the schema quietly diverges, where stamping too short merely fails loudly.
+
+This is a one-off per database, so it belongs in the project's runbook next to the job, not in a
+migration.
 
 ### 7. Verify
 
