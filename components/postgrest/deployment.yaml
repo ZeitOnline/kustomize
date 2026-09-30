@@ -9,6 +9,7 @@ metadata:
     wait-for-migrations: required
     security-config: hardened
     nginx-sidecar: required
+    barbacane-sidecar: required
   annotations:
     reloader.stakater.com/auto: "true"
 spec:

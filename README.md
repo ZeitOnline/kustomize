@@ -2,6 +2,7 @@
 
 This repository contains reusable [kustomize](https://kustomize.io/) components for Kubernetes deployments. Below is a list of the available components:
 
+- [barbacane-sidecar](components/barbacane-sidecar/): puts a [Barbacane](https://github.com/barbacane-dev/barbacane) gateway in front of a service, validating requests against its OpenAPI contract
 - [cloud-sql-proxy](components/cloud-sql-proxy/): deploys a [Cloud SQL Proxy](https://github.com/GoogleCloudPlatform/cloud-sql-proxy) for secure database connections
 - [db-sync](components/db-sync/): handles PostgreSQL database "syncs", typically between 'staging' and 'devel'
 - [db-upgrade](components/db-upgrade/): handles PostgreSQL upgrades and migrations between instances
@@ -21,7 +22,7 @@ Each component is located in its dedicated subdirectory under [`components/`](co
 
 ## Skills
 
-Two workflows that are fiddlier than they look are written up as Claude Code skills under
+Three workflows that are fiddlier than they look are written up as Claude Code skills under
 [`plugins/`](plugins/). Install them from this repository to have them available in the projects
 that need them:
 
@@ -29,6 +30,7 @@ that need them:
 /plugin marketplace add ZeitOnline/kustomize
 /plugin install harden-k8s-workloads@zeitonline-kustomize
 /plugin install adopt-goose-migrations@zeitonline-kustomize
+/plugin install barbacane-migration@zeitonline-kustomize
 ```
 
 ### Hardening skill
@@ -44,3 +46,10 @@ Converting a project's migrations to [goose](https://pressly.github.io/goose/) a
 with the [`migrator`](components/migrator/) component — including the version jump, the job's
 bookkeeping and the connection service file — is written up in
 [`plugins/adopt-goose-migrations/`](plugins/adopt-goose-migrations/).
+
+### Gateway skill
+
+Putting a [Barbacane](https://github.com/barbacane-dev/barbacane) gateway in front of a PostgREST
+service with the [`barbacane-sidecar`](components/barbacane-sidecar/) component — the audit that
+has to come first, what the contract now decides, and the headers it stops forwarding — is
+written up in [`plugins/barbacane-migration/`](plugins/barbacane-migration/).

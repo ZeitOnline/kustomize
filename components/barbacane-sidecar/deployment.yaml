@@ -1,0 +1,23 @@
+- op: add
+  path: /spec/template/spec/containers/-
+  value:
+    name: barbacane
+    image: barbacane   # the project's own, carrying the compiled artefact
+    args:
+    - serve
+    - --artifact=/config/api.bca
+    - --listen=0.0.0.0:8080
+    - --log-format=json
+    # the upstream is a loopback address, which is plaintext by nature and
+    # which the plugin sandbox refuses to call unless allowed explicitly
+    - --allow-plaintext-upstream
+    env:
+    - name: BARBACANE_UPSTREAM
+      value: http://127.0.0.1:8000   # the nginx sidecar, see the README
+    - name: BARBACANE_ALLOW_INTERNAL_EGRESS
+      value: "1"
+    readinessProbe:
+      httpGet:
+        # through the whole chain rather than the gateway alone
+        path: /rpc/health
+        port: 8080

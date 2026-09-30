@@ -14,6 +14,11 @@
       "name": "adopt-goose-migrations",
       "source": "./plugins/adopt-goose-migrations",
       "description": "How to move a project's database migrations to goose and run them with the components in this repository."
+    },
+    {
+      "name": "barbacane-migration",
+      "source": "./plugins/barbacane-migration",
+      "description": "How to put a Barbacane gateway in front of a PostgREST service with the components in this repository."
     }
   ]
 }
