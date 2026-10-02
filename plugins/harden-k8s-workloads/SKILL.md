@@ -79,6 +79,13 @@ no capabilities. Check each container's start-up behaviour, not just the app: en
 that render config (nginx templates), tools that want a cache (`uv` without `UV_NO_CACHE`)
 and anything writing a pid file all fail on a read-only root filesystem.
 
+Fixes that live in the **image** (`USER`, `ENV UV_NO_CACHE=1`) arrive in staging one CI build
+*after* the manifests: Flux applies the hardened manifests right after the merge, while the
+image tags in the overlay still point at the previous build. Expect a few minutes of crashing
+pods (a migrator Job complaining about `/root/.cache`, say) that heal once the images are
+bumped. Keep a fix in the manifests too (a ConfigMap entry, say) if even that is too much.
+In production, the release sets manifests and tags together.
+
 ### 5. Give each container its writable paths
 
 Beyond the `/tmp` of the first container, add an `emptyDir` per path a container writes, mounted by
