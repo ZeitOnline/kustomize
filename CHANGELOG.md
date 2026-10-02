@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/ZeitOnline/kustomize/compare/2.6.0...2.7.0) (2026-10-02)
+
+
+### Features
+
+* name the container ports of 'nginx-sidecar', 'barbacane-sidecar' & 'postgrest' ([#51](https://github.com/ZeitOnline/kustomize/issues/51)) ([a3c1954](https://github.com/ZeitOnline/kustomize/commit/a3c1954ee5def5b54764be8a3beb1073cd8e5bcd))
+
 ## [2.6.0](https://github.com/ZeitOnline/kustomize/compare/2.5.0...2.6.0) (2026-09-30)
 
 
