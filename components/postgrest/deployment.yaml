@@ -24,10 +24,13 @@ spec:
           envFrom:
           - configMapRef:
               name: postgrest-config
+          ports:
+          - name: postgrest
+            containerPort: 3000
           readinessProbe:
             httpGet:
               path: /rpc/health
-              port: 3000
+              port: postgrest
           securityContext:
             # must be able to read the certs -- 'security-config' replaces this
             # when included, and makes them group-readable via `fsGroup` instead

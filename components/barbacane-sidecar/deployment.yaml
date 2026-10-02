@@ -16,8 +16,11 @@
       value: http://127.0.0.1:8000   # the nginx sidecar, see the README
     - name: BARBACANE_ALLOW_INTERNAL_EGRESS
       value: "1"
+    ports:
+    - name: barbacane
+      containerPort: 8080
     readinessProbe:
       httpGet:
         # through the whole chain rather than the gateway alone
         path: /rpc/health
-        port: 8080
+        port: barbacane

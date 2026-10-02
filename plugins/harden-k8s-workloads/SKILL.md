@@ -112,6 +112,14 @@ either, so an nginx sidecar needs an unprivileged port **and** a non-root uid. P
 | `BackendConfig`, `HTTPRoute`, Ingress | backend/service ports |
 | tests | a fixture rewriting the config; `'listen 80'` is a prefix of `'listen 8000'`, so use a pattern |
 
+**Mind the rollout.** A numeric `targetPort` or health-check port changes for all pods at once, while
+the old ones still listen on the old port, so switching both in one release causes an outage. Point
+at the port **by name** instead (`targetPort: nginx`, and `portSpecification: USE_SERVING_PORT` in a
+`HealthCheckPolicy`). Each pod resolves the name itself, so old and new pods can serve side by side.
+This only helps once the *running* pods declare the named port, so if they don't yet, ship that
+first (still on the old number) and move the port in a second release. Without named ports, let
+nginx listen on both ports for one release instead.
+
 ### 7. Verify
 
 Diff renders, never sources: the output diff should contain only rows you can name. Re-run the
