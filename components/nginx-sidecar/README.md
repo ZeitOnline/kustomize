@@ -31,14 +31,14 @@ patches:
       name: myapp
       labels:
         nginx-sidecar: required
-# the sidecar listens on 8000, so point the Service at it
+# point the Service at the sidecar, by the name of its port
 - target:
     kind: Service
     name: myapp
   patch: |-
     - op: replace
       path: /spec/ports/0/targetPort
-      value: 8000
+      value: nginx
 # whatever the configuration substitutes
 - target:
     kind: Deployment
@@ -74,7 +74,27 @@ USER 101
 
 And since an `emptyDir` belongs to `root:root` unless the pod asks otherwise, the component sets `fsGroup: 10000` — the same value [`security-config`](../security-config/) uses — so that uid can write to the scratch volumes it gets. Both patches merge, so a pod-level `securityContext` of your own survives either way.
 
-**A port above 1024**, for the same reason: `NET_BIND_SERVICE` is gone. It is 8000 rather than the more obvious 8080 so that the port stays free for whatever fronts the sidecar — a validating gateway, say, which is the outermost thing in the pod and the one an operator expects on 8080. The configuration therefore says `listen 8000`, and everything pointing at it — the `Service`'s `targetPort`, a `HealthCheckPolicy`'s `httpHealthCheck.port`, an `Ingress` backend — has to agree. It hides in more places than one expects.
+**A port above 1024**, for the same reason: `NET_BIND_SERVICE` is gone. It is 8000 rather than the more obvious 8080 so that the port stays free for whatever fronts the sidecar — a validating gateway, say, which is the outermost thing in the pod and the one an operator expects on 8080. The configuration therefore says `listen 8000`.
+
+## Point at the port by name
+
+The container declares its port as `nginx`, and the readiness probe uses that name. Use it everywhere else, too: a `Service`'s `targetPort: nginx` is resolved by each pod for itself, so pods with different port numbers can serve side by side during a rollout. Moving the port then takes only `containerPort` and `listen`, in the same release, without a gap. A number in `targetPort`, by contrast, applies to old and new pods alike the moment the Service changes.
+
+A `HealthCheckPolicy` cannot name a port. Leave out `httpHealthCheck.port` and say `portSpecification: USE_SERVING_PORT` instead, so the load balancer checks each endpoint on the port the Service resolved for it:
+
+```yaml
+apiVersion: networking.gke.io/v1
+kind: HealthCheckPolicy
+spec:
+  default:
+    config:
+      type: HTTP
+      httpHealthCheck:
+        portSpecification: USE_SERVING_PORT
+        requestPath: /rpc/health
+```
+
+Port names have to be unique within a pod, which is why it is `nginx` rather than `http`.
 
 ## Order
 

@@ -3,10 +3,15 @@
   value:
     name: nginx
     image: nginx
+    # named, so a `targetPort` or probe pointing at it survives a change of the
+    # number -- each pod resolves the name by itself, old ones and new alike
+    ports:
+    - name: nginx
+      containerPort: 8000
     readinessProbe:
       httpGet:
         path: /rpc/health
-        port: 8000
+        port: nginx
     volumeMounts:
     - name: nginx-config
       mountPath: /etc/nginx/templates

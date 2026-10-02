@@ -31,10 +31,10 @@ Map the `barbacane` image name to it in the overlay's `images:`, the way `postgr
   patch: |-
     - op: replace
       path: /spec/ports/0/targetPort
-      value: 8080
+      value: barbacane   # the name of its port, see 'nginx-sidecar'
 ```
 
-**Everything else naming the port.** A `HealthCheckPolicy`'s `httpHealthCheck.port` especially: pointed at anything behind the gateway, the load balancer keeps a pod whose gateway is dead in rotation.
+**Everything else naming the port.** A `HealthCheckPolicy` especially: pointed at anything behind the gateway, the load balancer keeps a pod whose gateway is dead in rotation. Use `portSpecification: USE_SERVING_PORT` there rather than a number, as described for [`nginx-sidecar`](../nginx-sidecar/#point-at-the-port-by-name).
 
 ## Defaults worth overriding
 
