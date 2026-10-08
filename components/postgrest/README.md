@@ -36,3 +36,9 @@ components:
 ```
 
 The deployment also asks for the [`nginx-sidecar`](../nginx-sidecar/) and [`security-config: hardened`](../security-config/) components. Both labels do nothing unless those components are included.
+
+## Shutting down
+
+Every container waits 20 seconds (`lifecycle.preStop.sleep`) before it gets its `SIGTERM`. A Google load balancer only drops a pod from its network endpoint group after the pod is marked as terminating, which took 12 seconds in a merkl rollout; without the wait, PostgREST stops at once and the requests still arriving meanwhile are answered with a 503. The [`nginx-sidecar`](../nginx-sidecar/) and [`barbacane-sidecar`](../barbacane-sidecar/) components wait the same time, since each container gets its own signal — one that stops early leaves the others without an upstream.
+
+The 20 seconds come out of the default `terminationGracePeriodSeconds` of 30, which leaves 10 for requests in flight. A project with longer requests raises the grace period, not the sleep.

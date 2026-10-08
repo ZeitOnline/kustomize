@@ -31,6 +31,12 @@ spec:
             httpGet:
               path: /rpc/health
               port: postgrest
+          # keep serving until the load balancer has dropped the pod, which only
+          # starts after it's marked as terminating -- see the README
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 20
           securityContext:
             # must be able to read the certs -- 'security-config' replaces this
             # when included, and makes them group-readable via `fsGroup` instead
