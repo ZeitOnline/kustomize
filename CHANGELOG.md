@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.1](https://github.com/ZeitOnline/kustomize/compare/2.7.0...2.7.1) (2026-10-08)
+
+
+### Bug Fixes
+
+* wait for the load balancer before stopping postgrest pods ([#55](https://github.com/ZeitOnline/kustomize/issues/55)) ([ea5761c](https://github.com/ZeitOnline/kustomize/commit/ea5761c93d922ca4d7d796b24ece463258ffd401))
+
 ## [2.7.0](https://github.com/ZeitOnline/kustomize/compare/2.6.0...2.7.0) (2026-10-02)
 
 
