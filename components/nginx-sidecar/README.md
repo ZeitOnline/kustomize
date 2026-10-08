@@ -96,6 +96,10 @@ spec:
 
 Port names have to be unique within a pod, which is why it is `nginx` rather than `http`.
 
+## Shutting down
+
+The sidecar waits 20 seconds (`lifecycle.preStop.sleep`) before it gets its `SIGTERM`, like the [PostgREST](../postgrest/#shutting-down) container next to it, so the load balancer can drop the pod first. A container that stops early leaves the others without an upstream; anything put behind this sidecar needs the same wait.
+
 ## Order
 
 List this component **before** [`security-config`](../security-config/), so that the sidecar it adds is still hardened along with the rest of the pod. A component only patches the resources accumulated before it.

@@ -24,3 +24,9 @@
         # through the whole chain rather than the gateway alone
         path: /rpc/health
         port: barbacane
+    # every container gets its own SIGTERM, so the gateway has to wait for the
+    # load balancer as well, or requests still arriving would find it gone
+    lifecycle:
+      preStop:
+        sleep:
+          seconds: 20

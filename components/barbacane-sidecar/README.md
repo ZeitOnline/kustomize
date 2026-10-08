@@ -42,6 +42,7 @@ Map the `barbacane` image name to it in the overlay's `images:`, the way `postgr
 | --- | --- | --- |
 | `BARBACANE_UPSTREAM` | `http://127.0.0.1:8000` | no nginx sidecar — point it at the application port directly |
 | readiness probe | `GET /rpc/health` | anything that is not one of our [PostgREST](../postgrest/) deployments |
+| `preStop` sleep | 20 s | never alone: every container of the pod has to wait as long, see [shutting down](../postgrest/#shutting-down) |
 
 Both are ordinary container fields, so a project changes them in its own `patches:`, by container name:
 
