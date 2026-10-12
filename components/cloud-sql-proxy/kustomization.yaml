@@ -1,10 +1,50 @@
 # this layer makes sure all database clients have a
-# 'cloud-sql-proxy' set up as a sidecar
+# 'cloud-sql-proxy' set up as a native sidecar
 
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
 patches:
+# make sure `.initContainers` exists on the pod spec before the JSON patches below
+# append to it; merging an empty list leaves existing init containers untouched
+- target:
+    kind: Deployment
+    labelSelector: cloud-sql-proxy=required
+  patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ignored   # the target selector above decides what is patched
+    spec:
+      template:
+        spec:
+          initContainers: []
+- target:
+    kind: Job
+    labelSelector: cloud-sql-proxy=required
+  patch: |-
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: ignored
+    spec:
+      template:
+        spec:
+          initContainers: []
+- target:
+    kind: CronJob
+    labelSelector: cloud-sql-proxy=required
+  patch: |-
+    apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: ignored
+    spec:
+      jobTemplate:
+        spec:
+          template:
+            spec:
+              initContainers: []
 - path: deployment.yaml
   target:
     kind: Deployment
