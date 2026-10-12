@@ -13,21 +13,35 @@ label. The connection details come from the `cloudsql-proxy-iam` secret as provi
 For every labelled workload the component:
 
 - sets the `baseproject` service account (workload identity for the proxy),
-- appends the `cloud-sql-proxy` sidecar container, which consumes the **whole**
-  `cloudsql-proxy-iam` secret (it needs `INSTANCE_CONNECTION` and
-  `CLOUDSQL_PROXY_IMPERSONATION_SA`) and listens on `127.0.0.1`,
+- appends the `cloud-sql-proxy` container as a
+  [native sidecar](https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/)
+  to `initContainers` (`restartPolicy: Always`, Kubernetes >= 1.29), creating the list if it
+  is missing. It consumes the **whole** `cloudsql-proxy-iam` secret (it needs
+  `INSTANCE_CONNECTION` and `CLOUDSQL_PROXY_IMPERSONATION_SA`) and listens on `127.0.0.1`,
 - injects **only** `PGUSER` (the instance's IAM SQL user) into the application container
   (`containers[0]`) via a `secretKeyRef`,
 - gives the sidecar the proxy's built-in health server
-  (`CSQL_PROXY_HEALTH_CHECK=true`, `CSQL_PROXY_HTTP_ADDRESS=0.0.0.0`, default port `9090`)
-  and a `readinessProbe` on `/readiness`, so a Deployment Pod only becomes ready once the
-  proxy can reach the instance. These are **inlined into the appended sidecar** rather than
-  layered on with a separate strategic-merge patch — a strategic merge on the `containers`
-  list reorders it, which breaks consumers that address the injected sidecar positionally
-  (e.g. a variant that retargets `.../containers/1/envFrom/0/secretRef/name`). Appending the
-  fully-formed container keeps its index stable. The probe is a no-op on run-to-completion
-  `Job`/`CronJob` Pods but is carried there too, so the injected container is identical
-  across workload kinds.
+  (`CSQL_PROXY_HEALTH_CHECK=true`, `CSQL_PROXY_HTTP_ADDRESS=0.0.0.0`, default port `9090`),
+  a `startupProbe` on `/startup` and a `readinessProbe` on `/readiness`.
+
+Running the proxy as a native sidecar means:
+
+- the kubelet starts the application containers only once the proxy's `startupProbe`
+  succeeds, so the application never races the proxy on startup (no connection refused on
+  `127.0.0.1:5432` while the proxy is still coming up),
+- a `Job`/`CronJob` Pod completes when its main container exits; the kubelet then stops the
+  proxy instead of keeping the Pod running,
+- on shutdown the proxy is stopped only after the application containers.
+
+The sidecar is **appended** to `initContainers`, so positional patches on
+`initContainers/0` (e.g. [`wait-for-migrations`](../wait-for-migrations/), `pg-services`)
+keep their target. Init containers listed *before* the proxy run before it is started and
+therefore cannot reach the database.
+
+The container is appended fully formed (probes inlined) rather than layered on with a
+separate strategic-merge patch, which would reorder the list. Consumers that need to modify
+the sidecar should still address it by name with a strategic-merge patch on
+`initContainers` instead of a positional JSON patch.
 
 > **The application container must declare an `env:` list** – the component appends `PGUSER`
 > to it with a JSON patch (`add` to `.../containers/0/env/-`), which fails if the list is
@@ -44,7 +58,7 @@ resources:
 - ../base/myapp
 
 components:
-- github.com/ZeitOnline/kustomize/components/cloud-sql-proxy?ref=2.0.0
+- github.com/ZeitOnline/kustomize/components/cloud-sql-proxy?ref=3.0.0
 ```
 
 **`k8s/base/myapp/deployment.yaml`**
@@ -71,6 +85,23 @@ spec:
         - name: PGSSLMODE
           value: disable
 ```
+
+## Breaking change in 3.0.0
+
+Up to and including `2.x` the proxy was appended to `containers` (as `containers[1]` for a
+single-container Pod). From `3.0.0` it is a native sidecar in `initContainers`.
+
+### Migrating to 3.0.0
+
+1. Make sure the cluster runs Kubernetes >= 1.29.
+2. Retarget patches that address the sidecar in `containers`:
+   - strategic-merge patches by name (`containers: [{name: cloud-sql-proxy, ...}]`) must move
+     to `initContainers` — otherwise they silently add a second, broken container,
+   - positional JSON patches (`.../containers/1/...`) must point at the sidecar's index in
+     `initContainers` (or better, be replaced by a strategic-merge patch by name).
+3. Remove any workarounds that moved the sidecar to `initContainers` or made the application
+   wait for the proxy.
+4. Bump the component ref to `3.0.0`.
 
 This component is commonly used together with the
 [`migrator`](../migrator/) and [`wait-for-migrations`](../wait-for-migrations/) components.
