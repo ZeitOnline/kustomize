@@ -91,7 +91,8 @@ workloads that asked for `required` because they cannot take more.
 
 ### 5. Check the level of each workload
 
-- `required` — `fsGroup: 10000` only. No prerequisites, safe everywhere.
+- `required` — `fsGroup: 10000` and `seccompProfile: RuntimeDefault` at the pod level. No
+  prerequisites, safe everywhere.
 - `hardened` — plus `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]` and
   `readOnlyRootFilesystem: true` on **every** container, and a `/tmp` emptyDir on the first
   one, which therefore needs a `volumeMounts:` list (an empty one will do).

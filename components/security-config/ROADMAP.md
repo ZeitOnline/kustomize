@@ -11,11 +11,10 @@ order; the first item gates the rest.
 
 ## Next
 
-- **`seccompProfile: RuntimeDefault` and `runAsNonRoot: true`,** merged into the pod-level patch.
-  The two pieces of Pod Security Standards `restricted` we don't have yet. `seccompProfile` can go
-  in on its own; `runAsNonRoot` cannot, because the kubelet refuses to verify a *named* image user
-  (`USER app`) — the images have to end on `USER 10000` (or the manifests on an explicit
-  `runAsUser`) first.
+- **`runAsNonRoot: true`,** merged into the pod-level patch: the piece of Pod Security Standards
+  `restricted` we don't have yet (`seccompProfile: RuntimeDefault` is in already). It cannot go
+  in on its own, because the kubelet refuses to verify a *named* image user (`USER app`) — the
+  images have to end on `USER 10000` (or the manifests on an explicit `runAsUser`) first.
 - **`initContainers`.** Exempt today: the `replacements` only cover `containers.*`. Expect the same
   writable-path questions as for the containers -- merkl's `wait-for-migrations` runs `uv run`,
   which wants a cache directory unless `UV_NO_CACHE` is set.
