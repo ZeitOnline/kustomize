@@ -2,7 +2,7 @@
 
 This component hardens the `Deployment`s, `Job`s and `CronJob`s of everything it is applied to. There are two levels, selected via the value of the `security-config` label:
 
-- **`security-config: required`** — sets `fsGroup: 10000` at the pod level, so mounted volumes are readable by the `app` user used across our container images. This is the **default**: anything that doesn't ask for a level itself is labelled `required` by the component, so including it covers a whole environment rather than the workloads someone remembered to label.
+- **`security-config: required`** — sets `fsGroup: 10000` at the pod level, so mounted volumes are readable by the `app` user used across our container images, and `seccompProfile: RuntimeDefault`, the container runtime's default syscall filter. This is the **default**: anything that doesn't ask for a level itself is labelled `required` by the component, so including it covers a whole environment rather than the workloads someone remembered to label.
 - **`security-config: hardened`** — everything `required` does, plus `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]` and `readOnlyRootFilesystem: true` on **every** container, and a memory-backed `emptyDir` mounted at `/tmp` on the first one.
 
 Use `hardened` for a workload that writes nowhere but `/tmp` — most application workloads. Stay with `required` where a container needs broader filesystem access (a database writing its data directory, say) or any capability at all.

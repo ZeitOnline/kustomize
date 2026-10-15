@@ -7,3 +7,7 @@ spec:
     spec:
       securityContext:
         fsGroup: 10000
+        # the container runtime's default syscall filter (Pod Security Standards
+        # `restricted`); a container can still opt out with its own `seccompProfile`
+        seccompProfile:
+          type: RuntimeDefault

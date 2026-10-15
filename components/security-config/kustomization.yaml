@@ -45,8 +45,8 @@ patches:
       name: ignored
       labels:
         security-config: required
-# the pod-level `fsGroup` applies to every level; merging it in keeps any other
-# pod-level `securityContext` settings the target may have
+# the pod-level `fsGroup` and `seccompProfile` apply to every level; merging
+# them in keeps any other pod-level `securityContext` settings the target may have
 - path: fsgroup.yaml
   target:
     kind: Deployment
