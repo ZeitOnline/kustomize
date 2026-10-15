@@ -105,15 +105,31 @@ patches:
 # container -- the one place where an index is unavoidable, and harmless: a
 # spare /tmp is not a hazard. Containers that write elsewhere, and workloads
 # whose first container is not the interesting one, declare their own.
+# It is memory-backed and limited to 64Mi (ZEIT Security Standards), so a
+# runaway write gets the pod evicted rather than eating the node's memory; a
+# workload that needs more (browsers in `nightwatch`) opts out with the label
+# `security-config-tmp: unlimited`.
 - path: tmp.yaml
   target:
     kind: Deployment
-    labelSelector: security-config=hardened
+    labelSelector: security-config=hardened,security-config-tmp!=unlimited
+- path: tmp-unlimited.yaml
+  target:
+    kind: Deployment
+    labelSelector: security-config=hardened,security-config-tmp=unlimited
 - path: tmp.yaml
   target:
     kind: Job
-    labelSelector: security-config=hardened
+    labelSelector: security-config=hardened,security-config-tmp!=unlimited
+- path: tmp-unlimited.yaml
+  target:
+    kind: Job
+    labelSelector: security-config=hardened,security-config-tmp=unlimited
 - path: tmp-cronjob.yaml
   target:
     kind: CronJob
-    labelSelector: security-config=hardened
+    labelSelector: security-config=hardened,security-config-tmp!=unlimited
+- path: tmp-unlimited-cronjob.yaml
+  target:
+    kind: CronJob
+    labelSelector: security-config=hardened,security-config-tmp=unlimited
