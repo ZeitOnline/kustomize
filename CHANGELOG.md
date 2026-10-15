@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.0](https://github.com/ZeitOnline/kustomize/compare/2.7.1...2.8.0) (2026-10-15)
+
+
+### Features
+
+* **security-config:** seccompProfile RuntimeDefault for every level ([#58](https://github.com/ZeitOnline/kustomize/issues/58)) ([07bae5d](https://github.com/ZeitOnline/kustomize/commit/07bae5de0acdca75f381c1216139124038ebc9a9))
+
 ## [2.7.1](https://github.com/ZeitOnline/kustomize/compare/2.7.0...2.7.1) (2026-10-08)
 
 
