@@ -9,7 +9,8 @@
 # which the API server rejects. The container-level `securityContext` therefore
 # belongs to this component -- see the README.
 #
-# `initContainers` are left alone.
+# `initContainers` get them only where one of our components adds one
+# (`wait-for-migrations`); any other init container is left alone.
 
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
@@ -42,5 +43,14 @@ replacements:
       labelSelector: security-config=hardened
     fieldPaths:
     - spec.jobTemplate.spec.template.spec.containers.*.securityContext
+    options:
+      create: true
+  # `initContainers` only where we know there are some: a replacement cannot
+  # tell a missing list from an empty one, and fails on the former
+  - select:
+      kind: Deployment
+      labelSelector: security-config=hardened,wait-for-migrations=required
+    fieldPaths:
+    - spec.template.spec.initContainers.*.securityContext
     options:
       create: true
