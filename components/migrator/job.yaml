@@ -9,6 +9,11 @@ metadata:
     pg-services: required
     security-config: hardened   # migration state lives in the database
     kustomize.toolkit.fluxcd.io/force: enabled
+  annotations:
+    # goldilocks' VPA may only recommend here: evicting the running migration to
+    # apply new requests fails the Job (`backoffLimit: 0`), whatever the
+    # namespace's update mode says
+    goldilocks.fairwinds.com/vpa-update-mode: "off"
 spec:
   backoffLimit: 0       # no retries please
   template:
