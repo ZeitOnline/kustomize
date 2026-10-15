@@ -94,8 +94,10 @@ workloads that asked for `required` because they cannot take more.
 - `required` — `fsGroup: 10000` and `seccompProfile: RuntimeDefault` at the pod level. No
   prerequisites, safe everywhere.
 - `hardened` — plus `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]` and
-  `readOnlyRootFilesystem: true` on **every** container, and a `/tmp` emptyDir on the first
-  one, which therefore needs a `volumeMounts:` list (an empty one will do).
+  `readOnlyRootFilesystem: true` on **every** container (and `wait-for-migrations`' init
+  container), and a 64Mi `/tmp` emptyDir on the first one, which therefore needs a
+  `volumeMounts:` list (an empty one will do). More than 64Mi in `/tmp` evicts the pod; opt out
+  with the label `security-config-tmp: unlimited`.
 
 A workload can take `hardened` if it writes nowhere outside the paths you give it and needs
 no capabilities. Check each container's start-up behaviour, not just the app: entrypoints

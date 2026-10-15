@@ -16,6 +16,11 @@ spec:
             - "run"
             - "sh"
             - "/helpers/wait.sh"
+          env:
+            # `uv run` needs no cache, and 'security-config' makes the root
+            # filesystem read-only for this container as well
+            - name: UV_NO_CACHE
+              value: "1"
           volumeMounts:
           - name: wait-for-migrations
             mountPath: /helpers

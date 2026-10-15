@@ -3,7 +3,7 @@
 This component hardens the `Deployment`s, `Job`s and `CronJob`s of everything it is applied to. There are two levels, selected via the value of the `security-config` label:
 
 - **`security-config: required`** — sets `fsGroup: 10000` at the pod level, so mounted volumes are readable by the `app` user used across our container images, and `seccompProfile: RuntimeDefault`, the container runtime's default syscall filter. This is the **default**: anything that doesn't ask for a level itself is labelled `required` by the component, so including it covers a whole environment rather than the workloads someone remembered to label.
-- **`security-config: hardened`** — everything `required` does, plus `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]` and `readOnlyRootFilesystem: true` on **every** container, and a memory-backed `emptyDir` mounted at `/tmp` on the first one.
+- **`security-config: hardened`** — everything `required` does, plus `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]` and `readOnlyRootFilesystem: true` on **every** container (and on the init container of [`wait-for-migrations`](../wait-for-migrations/)), and a memory-backed `emptyDir` mounted at `/tmp` on the first one. That `/tmp` is limited to 64Mi: it counts against the pod's memory, and a pod that writes more gets evicted. A workload that needs more opts out with the label `security-config-tmp: unlimited` ([`nightwatch`](../nightwatch/) does, for its browsers).
 
 Use `hardened` for a workload that writes nowhere but `/tmp` — most application workloads. Stay with `required` where a container needs broader filesystem access (a database writing its data directory, say) or any capability at all.
 
