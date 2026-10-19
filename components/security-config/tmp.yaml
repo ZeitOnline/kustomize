@@ -9,3 +9,4 @@
     name: tmp
     emptyDir:
       medium: Memory
+      sizeLimit: 64Mi   # counts against the pod's memory

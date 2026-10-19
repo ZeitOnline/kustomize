@@ -46,6 +46,8 @@ kind: Deployment
 metadata:
   labels:
     security-config: hardened
+    # the browsers keep their profiles in /tmp, which 64Mi won't hold
+    security-config-tmp: unlimited
   name: nightwatch
 spec:
   selector:

@@ -15,9 +15,9 @@ order; the first item gates the rest.
   `restricted` we don't have yet (`seccompProfile: RuntimeDefault` is in already). It cannot go
   in on its own, because the kubelet refuses to verify a *named* image user (`USER app`) — the
   images have to end on `USER 10000` (or the manifests on an explicit `runAsUser`) first.
-- **`initContainers`.** Exempt today: the `replacements` only cover `containers.*`. Expect the same
-  writable-path questions as for the containers -- merkl's `wait-for-migrations` runs `uv run`,
-  which wants a cache directory unless `UV_NO_CACHE` is set.
+- **`initContainers` beyond `wait-for-migrations`.** A `replacements` target cannot tell a missing
+  `initContainers` list from an empty one and fails on the former, so only Deployments labelled
+  `wait-for-migrations=required` get the flags. Others need a label of their own to opt in.
 - **Pod Security Admission on the namespace.** `pod-security.kubernetes.io/warn=restricted` and
   `audit=restricted` first: they report violations without breaking anything, and the report tells
   us exactly what the two items above still owe. `enforce=restricted` afterwards is what makes the
@@ -28,8 +28,6 @@ order; the first item gates the rest.
 - **`automountServiceAccountToken: false`** for workloads that never call the API. Removes a real
   credential from the container and the `/var/run` mount question for nginx along with it. Not
   `nightwatch`, which needs the projected token for Workload Identity.
-- **`sizeLimit` on the `/tmp` volumes.** They are `medium: Memory` and count against the pod's
-  memory limit, so an unbounded write there is an OOM rather than a full disk.
 - **A level for the remaining components** -- `oauth2-proxy`, `gcs-bucket-proxy`, `db-sync`,
   `db-upgrade`, `testrunner`. Each is a question about what that container writes at run time, so
   decide it in staging rather than on paper.
