@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.8.0](https://github.com/ZeitOnline/kustomize/compare/2.7.1...2.8.0) (2026-10-19)
+
+
+### Features
+
+* **security-config:** 64Mi /tmp and hardened wait-for-migrations ([#60](https://github.com/ZeitOnline/kustomize/issues/60)) ([5a9a703](https://github.com/ZeitOnline/kustomize/commit/5a9a703514ac841361a0ed6dbc2c63bf2c39b999))
+* **security-config:** seccompProfile RuntimeDefault for every level ([#58](https://github.com/ZeitOnline/kustomize/issues/58)) ([07bae5d](https://github.com/ZeitOnline/kustomize/commit/07bae5de0acdca75f381c1216139124038ebc9a9))
+
 ## [2.7.1](https://github.com/ZeitOnline/kustomize/compare/2.7.0...2.7.1) (2026-10-08)
 
 
