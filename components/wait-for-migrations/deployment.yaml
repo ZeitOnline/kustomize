@@ -25,7 +25,15 @@ spec:
           - name: wait-for-migrations
             mountPath: /helpers
             readOnly: true
+          # even without a cache `uv run` creates a temporary directory, and
+          # 'security-config' mounts its /tmp into the first container only
+          - name: wait-for-migrations-tmp
+            mountPath: /tmp
       volumes:
       - name: wait-for-migrations
         configMap:
           name: wait-for-migrations
+      - name: wait-for-migrations-tmp
+        emptyDir:
+          medium: Memory
+          sizeLimit: 16Mi
