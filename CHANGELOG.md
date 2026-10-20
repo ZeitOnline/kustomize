@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.1](https://github.com/ZeitOnline/kustomize/compare/2.8.0...2.8.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* **wait-for-migrations:** give the init container its own /tmp ([#61](https://github.com/ZeitOnline/kustomize/issues/61)) ([02a2eb2](https://github.com/ZeitOnline/kustomize/commit/02a2eb26f82a3ec1e5b2fde809abe3ae65d3f2cc))
+
 ## [2.8.0](https://github.com/ZeitOnline/kustomize/compare/2.7.1...2.8.0) (2026-10-19)
 
 
