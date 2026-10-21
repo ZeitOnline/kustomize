@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.0](https://github.com/ZeitOnline/kustomize/compare/2.8.1...2.9.0) (2026-10-21)
+
+
+### Features
+
+* **security-config:** opt-in user namespaces ([#63](https://github.com/ZeitOnline/kustomize/issues/63)) ([26f8d41](https://github.com/ZeitOnline/kustomize/commit/26f8d41186efa0ea0d222d2a63ff0daedbc604d7))
+
 ## [2.8.1](https://github.com/ZeitOnline/kustomize/compare/2.8.0...2.8.1) (2026-10-20)
 
 
