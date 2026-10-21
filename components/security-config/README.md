@@ -7,6 +7,14 @@ This component hardens the `Deployment`s, `Job`s and `CronJob`s of everything it
 
 Use `hardened` for a workload that writes nowhere but `/tmp` — most application workloads. Stay with `required` where a container needs broader filesystem access (a database writing its data directory, say) or any capability at all.
 
+**User namespaces** (opt-in, either level): the label `security-config-user-namespace: enabled` adds `hostUsers: false`, so uid 0 in the container maps to an unprivileged uid on the node (ZEIT Security Standards, "Basis"; it also defuses low uids in upstream images). To opt in a whole overlay, list the [`user-namespaces`](user-namespaces/) sub-component *before* this one; it labels every Deployment, Job and CronJob. The overlay's own `labels:` would come too late, since this component selects on the label. Needs Kubernetes ≥ 1.33 and a recent kernel on the nodes (both clusters qualify), and a pod in a user namespace can't share the host's network, PID or IPC namespaces.
+
+```yaml
+components:
+  - github.com/ZeitOnline/kustomize/components/security-config/user-namespaces?ref=<version>
+  - github.com/ZeitOnline/kustomize/components/security-config?ref=<version>
+```
+
 The flags are set through `replacements`, whose field paths can say `containers.*` — neither a JSON patch (needs a position) nor a strategic merge (needs a container name) can express that. This matters more than it sounds: a strategic-merge patch that lists containers reorders them to match itself, so an overlay patching a sidecar can quietly move it to `containers[0]`. Anything addressing the app container by index would then harden the sidecar instead. The `/tmp` mount is the one exception, and a harmless one — a spare `/tmp` is not a hazard.
 
 ## Our own components

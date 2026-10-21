@@ -98,6 +98,9 @@ workloads that asked for `required` because they cannot take more.
   container), and a 64Mi `/tmp` emptyDir on the first one, which therefore needs a
   `volumeMounts:` list (an empty one will do). More than 64Mi in `/tmp` evicts the pod; opt out
   with the label `security-config-tmp: unlimited`.
+- Either level, optional: user namespaces (`hostUsers: false`) with the label
+  `security-config-user-namespace: enabled`, or for a whole overlay the `user-namespaces`
+  sub-component listed before `security-config`.
 
 A workload can take `hardened` if it writes nowhere outside the paths you give it and needs
 no capabilities. Check each container's start-up behaviour, not just the app: entrypoints

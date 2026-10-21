@@ -1,0 +1,34 @@
+# labels every Deployment, Job and CronJob so that 'security-config' runs it
+# in a user namespace (`hostUsers: false`); list it *before* 'security-config',
+# which selects on the label -- an overlay's own `labels:` would come too late
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+patches:
+- target:
+    kind: Deployment
+  patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ignored   # the target selector decides what is patched
+      labels:
+        security-config-user-namespace: enabled
+- target:
+    kind: Job
+  patch: |-
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: ignored
+      labels:
+        security-config-user-namespace: enabled
+- target:
+    kind: CronJob
+  patch: |-
+    apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: ignored
+      labels:
+        security-config-user-namespace: enabled

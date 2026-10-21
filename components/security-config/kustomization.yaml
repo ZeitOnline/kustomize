@@ -133,3 +133,47 @@ patches:
   target:
     kind: CronJob
     labelSelector: security-config=hardened,security-config-tmp=unlimited
+# user namespaces (ZEIT Security Standards, "Basis"): with `hostUsers: false`,
+# uid 0 in a container maps to an unprivileged uid on the node, which also
+# makes low uids in upstream images harmless. Opt-in for now, per workload
+# with the label `security-config-user-namespace: enabled`, or for a whole
+# overlay with the 'user-namespaces' component listed before this one; it
+# works with either level
+- target:
+    kind: Deployment
+    labelSelector: security-config,security-config-user-namespace=enabled
+  patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ignored
+    spec:
+      template:
+        spec:
+          hostUsers: false
+- target:
+    kind: Job
+    labelSelector: security-config,security-config-user-namespace=enabled
+  patch: |-
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: ignored
+    spec:
+      template:
+        spec:
+          hostUsers: false
+- target:
+    kind: CronJob
+    labelSelector: security-config,security-config-user-namespace=enabled
+  patch: |-
+    apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: ignored
+    spec:
+      jobTemplate:
+        spec:
+          template:
+            spec:
+              hostUsers: false
