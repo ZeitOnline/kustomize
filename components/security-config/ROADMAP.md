@@ -23,6 +23,10 @@ order; the first item gates the rest.
   us exactly what the two items above still owe. `enforce=restricted` afterwards is what makes the
   hardening non-regressable -- a new workload can no longer quietly skip the component.
 
+- **User namespaces by default.** `hostUsers: false` is opt-in for now (label or the
+  `user-namespaces` sub-component); once a few projects ran it in production, make it the default
+  and turn the label into an opt-out.
+
 ## Later
 
 - **`automountServiceAccountToken: false`** for workloads that never call the API. Removes a real
