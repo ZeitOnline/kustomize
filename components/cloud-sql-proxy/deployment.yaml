@@ -15,10 +15,16 @@
       secretKeyRef:
         name: cloudsql-proxy-iam
         key: PGUSER
+# Native sidecar (restartable init container, Kubernetes >= 1.29): the kubelet starts
+# the app containers only after the startupProbe below succeeds, so the app never races
+# the proxy on startup, and stops the proxy once a Job's main container has exited.
+# Appended (not prepended) so positional `initContainers/0` patches of other components
+# keep their target; init containers listed before the proxy cannot reach the database.
 - op: add
-  path: /spec/template/spec/containers/-
+  path: /spec/template/spec/initContainers/-
   value:
     name: cloud-sql-proxy
+    restartPolicy: Always
     command:
     - /cloud-sql-proxy
     - "--impersonate-service-account=$(CLOUDSQL_PROXY_IMPERSONATION_SA)"
@@ -29,20 +35,25 @@
     - secretRef:
         name: cloudsql-proxy-iam
     # Enable the proxy's built-in health server (mirror of --health-check /
-    # --http-address; default --http-port is 9090). The readinessProbe below hits
-    # /readiness, so the workload only becomes ready once the proxy can reach the
-    # instance.
+    # --http-address; default --http-port is 9090). The startupProbe gates the app
+    # containers on /startup, the readinessProbe keeps the pod unready while the proxy
+    # cannot reach the instance.
     env:
     - name: CSQL_PROXY_HEALTH_CHECK
       value: "true"
     - name: CSQL_PROXY_HTTP_ADDRESS
       value: "0.0.0.0"
     image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.2@sha256:fd2baaf9c709598e54838a6875833759412033ab5ee578cc81f9825fa34bd296
+    startupProbe:
+      httpGet:
+        path: /startup
+        port: 9090
+      periodSeconds: 1
+      failureThreshold: 60
     readinessProbe:
       httpGet:
         path: /readiness
         port: 9090
-      initialDelaySeconds: 5
       periodSeconds: 10
     securityContext:
       runAsNonRoot: true
