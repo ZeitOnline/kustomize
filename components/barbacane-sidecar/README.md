@@ -43,6 +43,7 @@ Map the `barbacane` image name to it in the overlay's `images:`, the way `postgr
 | `BARBACANE_UPSTREAM` | `http://127.0.0.1:8000` | no nginx sidecar — point it at the application port directly |
 | readiness probe | `GET /rpc/health` | anything that is not one of our [PostgREST](../postgrest/) deployments |
 | `preStop` sleep | 20 s | never alone: every container of the pod has to wait as long, see [shutting down](../postgrest/#shutting-down) |
+| `--keepalive-timeout` | 620 s | never below the load balancer's keep-alive (GCP: 600 s), see below |
 
 Both are ordinary container fields, so a project changes them in its own `patches:`, by container name:
 
@@ -65,6 +66,10 @@ Both are ordinary container fields, so a project changes them in its own `patche
             - name: BARBACANE_UPSTREAM
               value: http://127.0.0.1:3000
 ```
+
+## Keep-alive
+
+The load balancer keeps idle connections to the backends open for 600 s (GCP) and reuses them. Barbacane closes them after 60 s by default, so now and then the load balancer sends a request down a connection the gateway has just closed and answers it with a 502 itself, within milliseconds. The component therefore sets `--keepalive-timeout=620`. The flag needs a Barbacane image that knows it (0.12.3 does).
 
 ## Order
 

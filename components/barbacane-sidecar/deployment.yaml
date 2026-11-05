@@ -11,6 +11,9 @@
     # the upstream is a loopback address, which is plaintext by nature and
     # which the plugin sandbox refuses to call unless allowed explicitly
     - --allow-plaintext-upstream
+    # longer than the load balancer's (GCP: 600 s), which reuses idle
+    # connections and answers 502 when the gateway has just closed one
+    - --keepalive-timeout=620
     env:
     - name: BARBACANE_UPSTREAM
       value: http://127.0.0.1:8000   # the nginx sidecar, see the README
