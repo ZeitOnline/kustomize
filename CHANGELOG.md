@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.1](https://github.com/ZeitOnline/kustomize/compare/2.9.0...2.9.1) (2026-11-05)
+
+
+### Bug Fixes
+
+* **barbacane-sidecar:** keep idle connections longer than the load balancer ([#65](https://github.com/ZeitOnline/kustomize/issues/65)) ([4f365c8](https://github.com/ZeitOnline/kustomize/commit/4f365c8221ed22b9603038819d5baa994e9a095c))
+
 ## [2.9.0](https://github.com/ZeitOnline/kustomize/compare/2.8.1...2.9.0) (2026-10-21)
 
 
