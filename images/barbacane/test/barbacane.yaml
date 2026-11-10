@@ -1,0 +1,14 @@
+# every plugin in the image, so a missing or mismatched one fails the build
+plugins:
+  http-upstream:
+    path: /plugins/http-upstream.wasm
+  cors:
+    path: /plugins/cors.wasm
+  oidc-auth:
+    path: /plugins/oidc-auth.wasm
+  cel:
+    path: /plugins/cel.wasm
+  request-transformer:
+    path: /plugins/request-transformer.wasm
+  ai-proxy:
+    path: /plugins/ai-proxy.wasm

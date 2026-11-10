@@ -1,0 +1,59 @@
+name: Barbacane image
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/barbacane-image.yaml'
+      - 'images/barbacane/**'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    name: Build, test and publish
+    runs-on: zon-ubuntu-general-dind
+    permissions:
+      id-token: write
+      contents: read
+    defaults:
+      run:
+        working-directory: images/barbacane
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build
+        run: |
+          echo "image=${{ vars.GAR_DOCKER_REGISTRY }}/kustomize-barbacane:$(cat version)" >> "$GITHUB_ENV"
+          docker build --target barbacane --tag barbacane .
+          docker build --target testing --tag barbacane-testing .
+      - name: Test
+        run: |
+          # the tag follows upstream, `<barbacane version>-<our revision>`, so
+          # a bump of the upstream image needs a new `version`
+          binary=$(docker run --rm barbacane --version | cut -d' ' -f2)
+          case "$(cat version)" in
+            "$binary"-[0-9]*) ;;
+            *) echo "::error::version $(cat version) doesn't match barbacane $binary"; exit 1 ;;
+          esac
+          # compiles a spec using every plugin
+          docker run --rm barbacane-testing
+      - name: Setup auth
+        if: github.ref == 'refs/heads/main'
+        uses: ZeitOnline/gh-action-baseproject@v0
+        with:
+          # kustomize has no base project of its own; merkl's, the first project
+          # with the gateway, can push to the shared registry
+          project_name: merkl
+          environment: production
+          gar_docker_auth: true
+      - name: Publish
+        if: github.ref == 'refs/heads/main'
+        run: |
+          # tags are never overwritten: changes without a new `version` (say,
+          # renovate moving the base image's digest) wait for the next one
+          if docker manifest inspect "$image" > /dev/null 2>&1; then
+            echo "$image exists, nothing to publish"
+            exit 0
+          fi
+          docker tag barbacane "$image"
+          docker push "$image"

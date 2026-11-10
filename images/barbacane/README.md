@@ -1,0 +1,9 @@
+# Barbacane image
+
+The [Barbacane](https://github.com/barbacane-dev/barbacane) gateway for the [`barbacane-sidecar`](../../components/barbacane-sidecar/) component: the upstream binary plus the plugins our projects use, under `/plugins`, on our own digest-pinned `gcr.io/distroless/cc-debian12:nonroot`.
+
+- **Version:** `europe-west3-docker.pkg.dev/zeitonline-engineering/docker-zon/kustomize-barbacane:<version>`, with the version from [`version`](version): upstream's plus our revision, `0.12.4-1`. A new upstream version starts at `-1` (CI refuses a `version` that doesn't match the binary, so renovate's bump of the `FROM … AS upstream` line needs it), any other change to the image bumps the revision.
+- **Plugins:** `http-upstream`, `cors`, `oidc-auth`, `cel`, `request-transformer` and `ai-proxy` (the `PLUGINS` argument). They are downloaded from the release matching the binary and checked against its `plugin-checksums.txt`, so bumping the upstream image takes them along. A project needing another one adds it to `PLUGINS` and to [`test/`](test/).
+- **CI** ([`barbacane-image.yaml`](../../.github/workflows/barbacane-image.yaml)): builds the image on every branch, checks `version` against the binary and runs the `testing` stage, which compiles [`test/api.yaml`](test/api.yaml), a spec using every plugin. On `main` it publishes the version unless that tag exists already: tags are never overwritten, so a change without a new `version` (renovate moving the base image's digest) waits for the next one. Pushing uses merkl's base project, as kustomize has none.
+
+A project compiles its spec with `/barbacane` and `/plugins` from here and puts the artifact into an image based on this one, see the component's [README](../../components/barbacane-sidecar/README.md). The `.bca` bundles only the plugins the manifest lists, so the ones a project doesn't use cost nothing.
