@@ -23,13 +23,18 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Build
         run: |
-          echo "image=${{ vars.GAR_DOCKER_REGISTRY }}/kustomize-barbacane:$(cat version)" >> "$GITHUB_ENV"
-          docker build --target barbacane --tag barbacane .
-          docker build --target testing --tag barbacane-testing .
+          image="${{ vars.GAR_DOCKER_REGISTRY }}/kustomize-barbacane:$(cat version)"
+          echo "image=$image" >> "$GITHUB_ENV"
+          # a builder of its own for the multi-platform image published below
+          docker buildx create --use
+          # the runner's platform, loaded for the tests and the scan
+          docker buildx build --load --target barbacane --tag barbacane --tag "$image" .
+          docker buildx build --load --target testing --tag barbacane-testing .
       - name: Test
         run: |
           # the tag follows upstream, `<barbacane version>-<our revision>`, so
-          # a bump of the upstream image needs a new `version`
+          # a bump of the upstream image needs a new `version`; the plugins are
+          # fetched by it, too
           binary=$(docker run --rm barbacane --version | cut -d' ' -f2)
           case "$(cat version)" in
             "$binary"-[0-9]*) ;;
@@ -38,22 +43,57 @@ jobs:
           # compiles a spec using every plugin
           docker run --rm barbacane-testing
       - name: Setup auth
+        id: baseproject
         if: github.ref == 'refs/heads/main'
         uses: ZeitOnline/gh-action-baseproject@v0
         with:
-          # kustomize has no base project of its own; merkl's, the first project
-          # with the gateway, can push to the shared registry
-          project_name: merkl
+          project_name: kustomize
           environment: production
           gar_docker_auth: true
-      - name: Publish
+          vault_export_token: true
+      - name: Check for an existing tag
+        id: exists
         if: github.ref == 'refs/heads/main'
         run: |
           # tags are never overwritten: changes without a new `version` (say,
-          # renovate moving the base image's digest) wait for the next one
-          if docker manifest inspect "$image" > /dev/null 2>&1; then
+          # renovate moving the base image's digest) wait for the next one;
+          # anything but "not found" (a timeout, a 5xx) fails instead of
+          # publishing over an existing tag
+          if out=$(docker manifest inspect "$image" 2>&1); then
             echo "$image exists, nothing to publish"
-            exit 0
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          elif ! grep -qiE 'no such manifest|manifest unknown' <<< "$out"; then
+            echo "::error::can't check whether $image exists: $out"
+            exit 1
           fi
-          docker tag barbacane "$image"
-          docker push "$image"
+      - name: Retrieve Sysdig secure token
+        if: github.ref == 'refs/heads/main' && ! steps.exists.outputs.found
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4
+        with:
+          method: jwt
+          url: ${{ steps.baseproject.outputs.vault_addr }}
+          path: ${{ steps.baseproject.outputs.gha_vault_path }}
+          role: ${{ steps.baseproject.outputs.gha_vault_role }}
+          secrets: |
+            zon/v1/sysdig/sysdig-scanner api-key | SECURE_API_TOKEN;
+      - name: Scan and publish
+        if: github.ref == 'refs/heads/main' && ! steps.exists.outputs.found
+        run: |
+          # outside the build context
+          (
+            cd "$RUNNER_TEMP"
+            base="https://download.sysdig.com/scanning"
+            version=$(curl -L -s "$base/sysdig-cli-scanner/latest_version.txt")
+            curl -LO "$base/bin/sysdig-cli-scanner/$version/linux/amd64/sysdig-cli-scanner"
+            curl -LO "$base/bin/sysdig-cli-scanner/$version/linux/amd64/sysdig-cli-scanner.sha256"
+            sha256sum -c sysdig-cli-scanner.sha256
+            chmod +x sysdig-cli-scanner
+          )
+          # before the push, as a published tag stays: the runner's platform
+          # stands in for both, they differ only in the upstream binary
+          "$RUNNER_TEMP/sysdig-cli-scanner" --apiurl https://eu1.app.sysdig.com/secure \
+            --policy=sysdig-best-practices --output=json-file="$RUNNER_TEMP/scan-result.json" "$image"
+          # amd64 for the clusters and CI, arm64 for local builds on Apple
+          # silicon; only `COPY`s run for the target platform, no emulation
+          docker buildx build --platform linux/amd64,linux/arm64 --target barbacane \
+            --tag "$image" --push .

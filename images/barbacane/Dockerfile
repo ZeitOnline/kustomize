@@ -6,17 +6,19 @@
 # A new upstream version needs a new `version` too (`<upstream>-1`).
 FROM ghcr.io/barbacane-dev/barbacane:0.12.4@sha256:4cd621f7d705ddf56e9eebbed8a8555ed547a6e633e404c802932de7ca48c464 AS upstream
 
-FROM debian:12-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc AS plugins
+# wasm is the same on every platform, so this stage runs natively on the build
+# machine and the multi-platform build needs no emulation
+FROM --platform=$BUILDPLATFORM debian:12-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc AS plugins
 RUN apt-get update \
     && apt-get install --yes --no-install-recommends ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
-COPY --from=upstream /barbacane /bin/barbacane
-# the plugins come from the release matching the binary, so bumping the image
-# above takes them along; the release's `plugin-checksums.txt` verifies them
+# the plugins come from the release of the upstream part of `version`, which CI
+# checks against the binary; the release's `plugin-checksums.txt` verifies them
+COPY version /tmp/version
 ARG PLUGINS="http-upstream cors oidc-auth cel request-transformer ai-proxy"
 WORKDIR /plugins
 RUN set -eu; \
-    version=$(barbacane --version | cut -d' ' -f2); \
+    version=$(cut -d- -f1 /tmp/version); \
     base="https://github.com/barbacane-dev/barbacane/releases/download/v$version"; \
     curl -fsSLO "$base/plugin-checksums.txt"; \
     for p in $PLUGINS; do \
