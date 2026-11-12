@@ -12,22 +12,18 @@ FROM --platform=$BUILDPLATFORM debian:12-slim@sha256:734a72b3d6142a71993b4bc580c
 RUN apt-get update \
     && apt-get install --yes --no-install-recommends ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
-# the plugins come from the release of the upstream part of `version`, which CI
-# checks against the binary; the release's `plugin-checksums.txt` verifies them
-COPY version /tmp/version
-ARG PLUGINS="http-upstream cors oidc-auth cel request-transformer ai-proxy"
+# the plugins in `plugin-checksums.txt` come from the release of the upstream
+# part of `version`, which CI checks against the binary; the hashes are ours,
+# as releases can change, so new ones come with a new `version`
+COPY version plugin-checksums.txt /tmp/
 WORKDIR /plugins
 RUN set -eu; \
     version=$(cut -d- -f1 /tmp/version); \
     base="https://github.com/barbacane-dev/barbacane/releases/download/v$version"; \
-    curl -fsSLO "$base/plugin-checksums.txt"; \
-    for p in $PLUGINS; do \
-      curl -fsSLO "$base/$p.wasm"; \
-      grep " $p.wasm\$" plugin-checksums.txt > "$p.sha256"; \
-      sha256sum -c "$p.sha256"; \
-      rm "$p.sha256"; \
+    for p in $(cut -d' ' -f3 /tmp/plugin-checksums.txt); do \
+      curl -fsSLO "$base/$p"; \
     done; \
-    rm plugin-checksums.txt
+    sha256sum --strict -c /tmp/plugin-checksums.txt
 
 FROM gcr.io/distroless/cc-debian12:nonroot@sha256:9dac0a79194e45a7da0158a9c6da57b217585af0786db3845d1f0ec1a0dd182f AS barbacane
 COPY --from=upstream /barbacane /barbacane
