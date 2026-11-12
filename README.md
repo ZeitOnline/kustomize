@@ -20,6 +20,10 @@ This repository contains reusable [kustomize](https://kustomize.io/) components 
 
 Each component is located in its dedicated subdirectory under [`components/`](components/).
 
+## Images
+
+- [barbacane](images/barbacane/): the Barbacane binary and the plugins we use, the base of every project's gateway image for [`barbacane-sidecar`](components/barbacane-sidecar/); published whenever its `version` changes
+
 ## Skills
 
 Three workflows that are fiddlier than they look are written up as Claude Code skills under

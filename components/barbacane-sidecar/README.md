@@ -6,12 +6,14 @@ It targets any `Deployment` that carries the `barbacane-sidecar=required` label,
 
 ## What the project supplies
 
-**The image.** Barbacane serves a sealed artifact rather than the spec, so the contract is compiled into an image of the project's own and mounted nowhere: the component expects it at `/config/api.bca`. A stage that produces one, given the upstream `barbacane` image and the plugins the spec uses:
+**The image.** Barbacane serves a sealed artifact rather than the spec, so the contract is compiled into an image of the project's own and mounted nowhere: the component expects it at `/config/api.bca`. Build it on [our Barbacane image](../../images/barbacane/), which carries the binary and the plugins we use under `/plugins`, matching each other:
 
 ```dockerfile
+FROM europe-west3-docker.pkg.dev/zeitonline-engineering/docker-zon/kustomize-barbacane:0.12.4-1@sha256:… AS barbacane-dist
+
 FROM app AS gateway
 COPY --from=barbacane-dist /barbacane /bin/barbacane
-COPY plugins plugins
+COPY --from=barbacane-dist /plugins plugins
 COPY barbacane.yaml ./
 COPY api.yaml specs/api.yaml
 RUN barbacane compile --manifest barbacane.yaml --spec specs/api.yaml --output /tmp/api.bca
@@ -20,7 +22,7 @@ FROM barbacane-dist AS barbacane
 COPY --from=gateway /tmp/api.bca /config/api.bca
 ```
 
-Map the `barbacane` image name to it in the overlay's `images:`, the way `postgrest` and `nginx` are, and add the target to the CI build. The upstream image ships only the binary, so the plugins the spec dispatches through have to come from the matching release — check them in rather than downloading at build time, and refresh them whenever the image is bumped. Renovate moves the image and not the plugins.
+Map the `barbacane` image name to it in the overlay's `images:`, the way `postgrest` and `nginx` are, and add the target to the CI build. The manifest names the plugins as `./plugins/<name>.wasm`; nothing needs to be checked in, and the `.bca` bundles only the plugins the manifest lists.
 
 **The Service.** The gateway is the front door, so point the `Service` at it — as with `nginx-sidecar`, the component stays out of the Service so that two components never fight over one field:
 

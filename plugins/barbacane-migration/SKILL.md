@@ -58,10 +58,11 @@ so PostgREST filters (`select=`, `id=in.(...)`, `valid_through=gt.`) need no dec
   `{type: string, nullable: true}` rejects `null`. Drop the `type` to allow null.
 - `$ref`, `pattern` and `format` inside declared schemas *are* enforced.
 - Validation is **request-only**. There is no response validation.
-- The distroless image ships only the binary — plugins must be vendored separately. **Renovate
-  bumps the image and not the checked-in `.wasm`**, so the two drift apart silently; refresh the
-  plugin in the same PR. A plugin a few minors behind still loaded fine at 0.12, so drift is
-  invisible until it is not.
+- The upstream image ships only the binary. Use ours instead,
+  `docker-zon/kustomize-barbacane:<barbacane version>-<revision>` ([`images/barbacane`](../../images/barbacane/)):
+  the binary plus the plugins we use under `/plugins`, fetched from the release matching the
+  binary, so the two can't drift apart. Plugins only matter at compile time: the `.bca` bundles
+  the ones the manifest lists. The image is built for amd64 and arm64.
 
 ## Only declared headers reach the upstream (0.11+)
 
@@ -112,8 +113,16 @@ curl -sSLO https://github.com/PostgREST/postgrest/releases/download/v13.0.8/post
 tar xJf postgrest-*.tar.xz     # assets: {ubuntu,macos}-aarch64, linux-static-x86-64, macos-x86-64
 ```
 
-Point the suite at it with `POSTGREST=/path/to/postgrest` (already in tox `passenv`). Barbacane
-comes from its own release as `barbacane-<arch>-unknown-linux-gnu`; pass it as `BARBACANE`.
+Point the suite at it with `POSTGREST=/path/to/postgrest` (already in tox `passenv`).
+
+**No `barbacane` binary.** The same goes for Barbacane: take the version from our image's tag
+(`kustomize-barbacane:0.12.4-1` → `0.12.4`) and fetch the release binary for your platform, then
+pass it as `BARBACANE`. Only the plugins come from the image (step 1):
+
+```bash
+curl -sSLo barbacane https://github.com/barbacane-dev/barbacane/releases/download/v0.12.4/barbacane-aarch64-unknown-linux-gnu
+chmod +x barbacane    # {x86_64,aarch64}-unknown-linux-{gnu,musl}, -apple-darwin; checksums.txt
+```
 
 **No PostgreSQL running, and the system cluster needs root.** Run your own as the current user:
 
@@ -187,9 +196,11 @@ nobody notices until someone runs `git shortlog`.
 
 ### 1. Test harness
 
-- `backend/barbacane.yaml` — manifest declaring the `http-upstream` plugin path. Replaces `wiretap.yaml`.
-- Vendor `plugins/http-upstream.wasm` from the matching release so a checkout plus the binary is
-  enough to run the tests. Verify against the release's `plugin-checksums.txt`.
+- `backend/barbacane.yaml` — manifest declaring the plugin as `./plugins/http-upstream.wasm`.
+  Replaces `wiretap.yaml`. Nothing is vendored (`plugins/` goes into `.gitignore`): the Docker
+  stages copy `/barbacane` and `/plugins` from our image; to run the tests outside Docker, copy
+  `/plugins` out of it once (`docker create`, `docker cp`) and take the binary from the release
+  (see "Getting the suite runnable").
 - Add the anchor to `api.yaml` and one `x-barbacane-dispatch: *dispatch` line per operation.
   Name the anchor holder something *other* than `x-barbacane-*` or the compiler warns `E1015`:
 
@@ -210,8 +221,9 @@ p = Popen([executable, 'dev', '--listen', f'127.0.0.1:{port}',
                    BARBACANE_ALLOW_INTERNAL_EGRESS='1'))
 ```
 
-- The test-only spec (`tests/api.yaml`) holds routes that must **not** exist in production —
-  in freebies `/rpc/role` and `/_/__test__`. Compile it only for tests.
+- The test-only spec (`tests/test-api.yaml`) holds routes that must **not** exist in production —
+  in freebies `/rpc/role` and `/_/__test__`. Compile it only for tests. Give it its own file
+  name: since 0.12.4 two specs with the same name are refused (`E1058`).
 - Add `BARBACANE` to tox `passenv`.
 
 Expect the suite to pass **unchanged**. If a test fails, the contract is usually wrong, not the test.
@@ -224,8 +236,9 @@ Two relaxations were needed in freebies, both worth checking for:
 
 ### 2. Production sidecar
 
-- Dockerfile: a builder stage running `barbacane compile`, then a final stage
-  `FROM <barbacane image> AS barbacane` with `COPY --from=... /api.bca /config/api.bca`.
+- Dockerfile: a builder stage that copies `/barbacane` and `/plugins` (to `./plugins`) from our
+  image and runs `barbacane compile`, then a final stage `FROM <our image> AS barbacane` with
+  `COPY --from=... /api.bca /config/api.bca`.
   Compile **only** the production specs — never the test-only ones.
 - Register the image (`k8s/base/registry`), add tags to both `versions` components, add the target
   to CI and the Tiltfile.
