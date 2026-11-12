@@ -5,10 +5,10 @@ description: Replace Wiretap with Barbacane as a contract-validating API gateway
 
 # Migrating a PostgREST project from Wiretap to Barbacane
 
-Reference implementations: `ZeitOnline/freebies` and `ZeitOnline/merkl`, both running it.
-The k8s side is the [`barbacane-sidecar`](../../components/barbacane-sidecar/) component; what
+Reference implementations: `ZeitOnline/freebies` and `ZeitOnline/merkl`, both running it;
+`ZeitOnline/comments` for several services with one contract each. The k8s side is the [`barbacane-sidecar`](../../components/barbacane-sidecar/) component; what
 stays per-project is the contract, the image that compiles it, and the header declarations.
-Verified against **Barbacane 0.12.2**. Re-check the facts below if the version differs — it is
+Verified against **Barbacane 0.12.4**. Re-check the facts below if the version differs — it is
 pre-1.0, it breaks things between minors, and these are mostly undocumented behaviours found by
 experiment. Read its CHANGELOG before any upgrade: 0.11 and 0.12 each changed what reaches the
 upstream, and each requires every `.bca` artifact to be recompiled.
@@ -39,6 +39,10 @@ Do this audit **before** touching k8s, and report the findings to the user:
    `/health` (an nginx alias), and `GET /allowances` (declared POST-only, but the admin UI GETs it).
 3. Smoketest / nightwatch paths.
 4. Anything internal calling the service hostname directly.
+5. The live traffic itself: the unsampled logs of the internal Envoy gateway (Honeycomb
+   `envoy-internal`/`envoy-external.cluster-infra-envoy-gateway`, backend in `upstream_cluster`)
+   and `fastly.www`, for a few weeks. They show the paths and methods, not the bodies: check
+   those against the callers' code (in comments, zoca sends ids as strings).
 
 Then diff that surface against `api.yaml`. Everything missing has to be declared or the gateway
 will 404 it. **Undeclared query params ride along fine** — only paths and methods are routed —
@@ -57,6 +61,13 @@ so PostgREST filters (`select=`, `id=in.(...)`, `valid_through=gt.`) need no dec
 - **OpenAPI 3.0 `nullable: true` is ignored.** The validator is plain JSON Schema, so
   `{type: string, nullable: true}` rejects `null`. Drop the `type` to allow null.
 - `$ref`, `pattern` and `format` inside declared schemas *are* enforced.
+- **Query and path values are not coerced.** `{type: integer}` rejects `?n=5` with
+  `"5" is not of type "integer"`; declare such values `type: string` with a `pattern`.
+- **A declared query param that is repeated is a 400.** Params callers repeat (`?id=1&id=2`)
+  stay undeclared; undeclared ones pass, repeated or not.
+- **Errors the gateway generates itself bypass the middlewares** (validation 400s, 404, 405): a
+  `cors` middleware doesn't add `Access-Control-Allow-Origin` to them, so a cross-origin caller
+  sees a CORS error instead of the problem body (bitpoll, 0.12.3).
 - Validation is **request-only**. There is no response validation.
 - The upstream image ships only the binary. Use ours instead,
   `docker-zon/kustomize-barbacane:<barbacane version>-<revision>` ([`images/barbacane`](../../images/barbacane/)):
@@ -245,6 +256,20 @@ Two relaxations were needed in freebies, both worth checking for:
 - Include the [`barbacane-sidecar`](../../components/barbacane-sidecar/) component, which brings
   the container, its port and its probe. List it **before** `security-config`. The project still
   repoints the `Service` at 8080 itself, so that two components never own one field.
+- **Switch the `Service` in a later release than the one adding the sidecar.** A Service
+  targeting the named port `barbacane` drops every pod that doesn't declare it yet, so doing
+  both at once empties the endpoints during the rollout. First release: tests plus an inert
+  sidecar (Service still on `nginx`); second: `targetPort: barbacane`.
+- **nginx needs `keepalive_timeout 120s`** (in its `server` block). Barbacane keeps idle
+  connections to nginx for 90 s, nginx closes them after 75 s by default, and the race shows
+  as fast 502s (~3 ms, `HTTP call failed: … error sending request` in the gateway log).
+- **Patching the sidecar's `args` replaces the component's list**, including
+  `--keepalive-timeout=620` (2.9.1). Repeat what you still need, and diff the render.
+- **Every Deployment labelled `barbacane-sidecar: required` gets a gateway**, and the shared
+  postgrest base may set the label for all of them. A service that isn't ready for it (no
+  contract compiled into the image) must drop the label in its base, or its gateway's failing
+  readiness takes the pods out of their Service. Several services: one image with one artifact
+  each (`/config/<service>.bca`) and a patch per Deployment choosing it, as in comments.
 - **Move every health check onto the gateway port.** A GKE `HealthCheckPolicy`, an ingress or
   load balancer probe, anything addressing PostgREST or nginx directly, now bypasses the
   component most likely to fail — a pod whose gateway is dead stays in rotation. Grep the
@@ -262,7 +287,8 @@ Two relaxations were needed in freebies, both worth checking for:
 
 - `tox` green, unchanged.
 - `kustomize build` for each environment; diff against the pre-change output and confirm the only
-  changes are the sidecar and the `targetPort`.
+  changes are the sidecar, its arguments, nginx's `keepalive_timeout` and (second stage) the
+  `targetPort`.
 - Run the **compiled production artifact** against the real `nginx.conf` and PostgREST, and walk
   the audit list from step 1 — every path the frontend and the site actually call, with the auth
   each really sends. This is what catches the 405s. In freebies the `/api/*` callers send their own
@@ -272,7 +298,8 @@ Two relaxations were needed in freebies, both worth checking for:
 ## Stop and ask
 
 - **The contract-scope decision.** Once the audit shows undeclared live traffic, the options
-  (declare it / generate it / catch-all / gateway behind nginx instead) trade validation coverage
+  (declare it / generate it / catch-all / gateway behind nginx instead, as in `ZeitOnline/wally`,
+  whose Service keeps targeting `nginx`) trade validation coverage
   against contract size. That is the user's call. Do not pick silently — getting it wrong is a
   production outage, not a failed test.
 - Anything that would change existing tests.
