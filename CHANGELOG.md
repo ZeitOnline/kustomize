@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.0](https://github.com/ZeitOnline/kustomize/compare/2.9.1...2.10.0) (2026-11-12)
+
+
+### Features
+
+* **barbacane:** one gateway image for every project ([#67](https://github.com/ZeitOnline/kustomize/issues/67)) ([c9ed98f](https://github.com/ZeitOnline/kustomize/commit/c9ed98f1ba2a84d8aeea01b8595bebb05c042a6e))
+
 ## [2.9.1](https://github.com/ZeitOnline/kustomize/compare/2.9.0...2.9.1) (2026-11-05)
 
 
