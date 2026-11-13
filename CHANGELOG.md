@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.1](https://github.com/ZeitOnline/kustomize/compare/2.10.0...2.10.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* **cloud-sql-proxy:** update the proxy to 2.27.0 ([#72](https://github.com/ZeitOnline/kustomize/issues/72)) ([978fa80](https://github.com/ZeitOnline/kustomize/commit/978fa8006d7edb0f2661a30a4d31fff135f91310))
+
 ## [2.10.0](https://github.com/ZeitOnline/kustomize/compare/2.9.1...2.10.0) (2026-11-12)
 
 
