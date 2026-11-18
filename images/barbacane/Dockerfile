@@ -25,7 +25,9 @@ RUN set -eu; \
     done; \
     sha256sum --strict -c /tmp/plugin-checksums.txt
 
-FROM gcr.io/distroless/cc-debian12:nonroot@sha256:9dac0a79194e45a7da0158a9c6da57b217585af0786db3845d1f0ec1a0dd182f AS barbacane
+# Debian 13: distroless' Debian 12 image still ships libssl3 3.0.20 (7 fixable
+# High); the upstream binary runs unchanged on the newer glibc
+FROM gcr.io/distroless/cc-debian13:nonroot@sha256:cb87acc574abe719b6e5c547384defa2f7b1f24af9605d3f618cf852495d8be2 AS barbacane
 COPY --from=upstream /barbacane /barbacane
 COPY --from=plugins /plugins /plugins
 EXPOSE 8080
