@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.2](https://github.com/ZeitOnline/kustomize/compare/2.10.1...2.10.2) (2026-11-19)
+
+
+### Bug Fixes
+
+* **barbacane:** base the gateway image on distroless Debian 13 ([#74](https://github.com/ZeitOnline/kustomize/issues/74)) ([8987c12](https://github.com/ZeitOnline/kustomize/commit/8987c1217251cf4b462268945da6f844cd7a3ec3))
+
 ## [2.10.1](https://github.com/ZeitOnline/kustomize/compare/2.10.0...2.10.1) (2026-11-13)
 
 
