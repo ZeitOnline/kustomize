@@ -73,6 +73,14 @@ Both are ordinary container fields, so a project changes them in its own `patche
 
 The load balancer keeps idle connections to the backends open for 600 s (GCP) and reuses them. Barbacane closes them after 60 s by default, so now and then the load balancer sends a request down a connection the gateway has just closed and answers it with a 502 itself, within milliseconds. The component therefore sets `--keepalive-timeout=620`. The flag needs a Barbacane image that knows it (0.12.3 does).
 
+## Metrics
+
+Barbacane serves Prometheus metrics on its admin API, `/metrics` on port **8081** (`barbacane-admin`). The component binds it to the pod's address instead of the loopback default (`--admin-bind=0.0.0.0:8081`), labels the pods `barbacane-sidecar: required` and adds a `PodMonitor` (`barbacane`) that scrapes every such pod of the namespace. Worth watching: `barbacane_validation_failures_total{method,path,reason}` (what the gateway rejects, and why) and `barbacane_requests_total{method,path,status,api}`; the full list is in Barbacane's [observability guide](https://github.com/barbacane-dev/barbacane/blob/main/docs/guide/observability.md#metrics).
+
+No Service exposes the port, but anything in the cluster that reaches the pod can read it: besides the metrics, the admin API answers `/health` and `/provenance` (the artifact's hashes and plugin versions), nothing that changes the gateway.
+
+A project that replaces the container's `args` (comments does) has to add `--admin-bind=0.0.0.0:8081` itself, or the `PodMonitor` finds a port nobody listens on.
+
 ## Order
 
 List this component **before** [`security-config`](../security-config/), so the container it adds is hardened along with the rest of the pod. A component only patches the resources accumulated before it.

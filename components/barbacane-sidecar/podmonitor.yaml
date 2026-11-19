@@ -1,0 +1,13 @@
+# scrapes the gateway's metrics (requests, validation failures, latencies)
+# from every pod of the namespace that runs it
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: barbacane
+spec:
+  selector:
+    matchLabels:
+      barbacane-sidecar: required
+  podMetricsEndpoints:
+  - port: barbacane-admin
+    path: /metrics
