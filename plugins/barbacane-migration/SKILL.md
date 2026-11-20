@@ -254,7 +254,9 @@ Two relaxations were needed in freebies, both worth checking for:
 - Register the image (`k8s/base/registry`), add tags to both `versions` components, add the target
   to CI and the Tiltfile.
 - Include the [`barbacane-sidecar`](../../components/barbacane-sidecar/) component, which brings
-  the container, its port and its probe. List it **before** `security-config`. The project still
+  the container, its ports (`barbacane`, and `barbacane-admin` for the metrics), its probe, the
+  pod label `barbacane-sidecar: required` and a `PodMonitor` that scrapes the metrics (2.11).
+  List it **before** `security-config`. The project still
   repoints the `Service` at 8080 itself, so that two components never own one field.
 - **Switch the `Service` in a later release than the one adding the sidecar.** A Service
   targeting the named port `barbacane` drops every pod that doesn't declare it yet, so doing
@@ -264,7 +266,10 @@ Two relaxations were needed in freebies, both worth checking for:
   connections to nginx for 90 s, nginx closes them after 75 s by default, and the race shows
   as fast 502s (~3 ms, `HTTP call failed: … error sending request` in the gateway log).
 - **Patching the sidecar's `args` replaces the component's list**, including
-  `--keepalive-timeout=620` (2.9.1). Repeat what you still need, and diff the render.
+  `--keepalive-timeout=620` (2.9.1) and `--admin-bind=0.0.0.0:8081` (2.11; without it the
+  `PodMonitor` finds a port nobody listens on, `TargetDown`). Repeat what you still need, and
+  compare the project's `args` with the component's on every component bump: the render diff
+  doesn't show a flag the component added, since the project's list doesn't change.
 - **Every Deployment labelled `barbacane-sidecar: required` gets a gateway**, and the shared
   postgrest base may set the label for all of them. A service that isn't ready for it (no
   contract compiled into the image) must drop the label in its base, or its gateway's failing

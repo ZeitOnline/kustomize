@@ -4,6 +4,8 @@ This component adds a [Barbacane](https://github.com/barbacane-dev/barbacane) ga
 
 It targets any `Deployment` that carries the `barbacane-sidecar=required` label, which the [`postgrest`](../postgrest/) component declares.
 
+The [`barbacane-migration`](../../plugins/barbacane-migration/) skill describes this component step by step: a change here (a port, a flag, a resource) belongs into its `SKILL.md` in the same PR.
+
 ## What the project supplies
 
 **The image.** Barbacane serves a sealed artifact rather than the spec, so the contract is compiled into an image of the project's own and mounted nowhere: the component expects it at `/config/api.bca`. Build it on [our Barbacane image](../../images/barbacane/), which carries the binary and the plugins we use under `/plugins`, matching each other:

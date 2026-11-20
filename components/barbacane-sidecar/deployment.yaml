@@ -38,7 +38,3 @@
       preStop:
         sleep:
           seconds: 20
-# the pods carry the label too, so the PodMonitor finds them
-- op: add
-  path: /spec/template/metadata/labels/barbacane-sidecar
-  value: required

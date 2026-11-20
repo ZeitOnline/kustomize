@@ -12,3 +12,9 @@ patches:
   target:
     kind: Deployment
     labelSelector: barbacane-sidecar=required
+# the pods carry the label too, so the PodMonitor finds them; a strategic
+# merge creates `labels` if the template has none yet, a JSON patch wouldn't
+- path: pod-labels.yaml
+  target:
+    kind: Deployment
+    labelSelector: barbacane-sidecar=required

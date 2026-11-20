@@ -1,0 +1,9 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ignored   # the target selects the Deployments
+spec:
+  template:
+    metadata:
+      labels:
+        barbacane-sidecar: required
