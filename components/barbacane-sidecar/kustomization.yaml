@@ -4,8 +4,17 @@
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
+resources:
+- podmonitor.yaml
+
 patches:
 - path: deployment.yaml
+  target:
+    kind: Deployment
+    labelSelector: barbacane-sidecar=required
+# the pods carry the label too, so the PodMonitor finds them; a strategic
+# merge creates `labels` if the template has none yet, a JSON patch wouldn't
+- path: pod-labels.yaml
   target:
     kind: Deployment
     labelSelector: barbacane-sidecar=required

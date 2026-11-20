@@ -14,6 +14,9 @@
     # longer than the load balancer's (GCP: 600 s), which reuses idle
     # connections and answers 502 when the gateway has just closed one
     - --keepalive-timeout=620
+    # the admin API serves the metrics; on the pod's address rather than the
+    # loopback default, so Prometheus can scrape it (see 'podmonitor.yaml')
+    - --admin-bind=0.0.0.0:8081
     env:
     - name: BARBACANE_UPSTREAM
       value: http://127.0.0.1:8000   # the nginx sidecar, see the README
@@ -22,6 +25,8 @@
     ports:
     - name: barbacane
       containerPort: 8080
+    - name: barbacane-admin
+      containerPort: 8081
     readinessProbe:
       httpGet:
         # through the whole chain rather than the gateway alone
