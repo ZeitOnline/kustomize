@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.0](https://github.com/ZeitOnline/kustomize/compare/2.10.2...2.11.0) (2026-11-20)
+
+
+### Features
+
+* **barbacane-sidecar:** let Prometheus scrape the gateway's metrics ([#75](https://github.com/ZeitOnline/kustomize/issues/75)) ([4d0d5d0](https://github.com/ZeitOnline/kustomize/commit/4d0d5d06b4f55bbbef2518c7e6e8c05c0ef01ef2))
+
 ## [2.10.2](https://github.com/ZeitOnline/kustomize/compare/2.10.1...2.10.2) (2026-11-19)
 
 
