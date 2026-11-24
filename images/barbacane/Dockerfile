@@ -4,7 +4,7 @@
 # image; see README.md.
 #
 # A new upstream version needs a new `version` too (`<upstream>-1`).
-FROM ghcr.io/barbacane-dev/barbacane:0.12.4@sha256:4cd621f7d705ddf56e9eebbed8a8555ed547a6e633e404c802932de7ca48c464 AS upstream
+FROM ghcr.io/barbacane-dev/barbacane:0.12.5@sha256:87d653a5a2e9abd837d25ceb75e3d416d06b256e0bcaeb4f736bc56cfdfe13d9 AS upstream
 
 # wasm is the same on every platform, so this stage runs natively on the build
 # machine and the multi-platform build needs no emulation
