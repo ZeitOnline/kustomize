@@ -1,6 +1,28 @@
 INHERIT: /zon/common_config.yaml
+# the whole repository, so the components' READMEs get published, too
+docs_dir: .
+edit_uri: edit/main/
 nav:
 - "(re-usable) 'kustomize' components": README.md
+- Components:
+  - barbacane-sidecar: components/barbacane-sidecar/README.md
+  - cloud-sql-proxy: components/cloud-sql-proxy/README.md
+  - db-sync: components/db-sync/README.md
+  - db-upgrade: components/db-upgrade/README.md
+  - gcs-bucket-proxy: components/gcs-bucket-proxy/README.md
+  - migrator: components/migrator/README.md
+  - nginx-sidecar: components/nginx-sidecar/README.md
+  - nightwatch: components/nightwatch/README.md
+  - oauth2-proxy: components/oauth2-proxy/README.md
+  - pg-services: components/pg-services/README.md
+  - postgrest: components/postgrest/README.md
+  - security-config: components/security-config/README.md
+- Images:
+  - barbacane: images/barbacane/README.md
+- Skills:
+  - harden-k8s-workloads: plugins/harden-k8s-workloads/SKILL.md
+  - adopt-goose-migrations: plugins/adopt-goose-migrations/SKILL.md
+  - barbacane-migration: plugins/barbacane-migration/SKILL.md
 repo_url: https://github.com/ZeitOnline/kustomize
 site_name: kustomize
 team: team-engagement
