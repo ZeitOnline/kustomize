@@ -8,7 +8,7 @@ FROM ghcr.io/barbacane-dev/barbacane:0.12.5@sha256:87d653a5a2e9abd837d25ceb75e3d
 
 # wasm is the same on every platform, so this stage runs natively on the build
 # machine and the multi-platform build needs no emulation
-FROM --platform=$BUILDPLATFORM debian:12-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc AS plugins
+FROM --platform=$BUILDPLATFORM debian:12-slim@sha256:e67eeead736ff7bbe258ef088bff683635c561b1fcfefad0806c1df4ab49ce0e AS plugins
 RUN apt-get update \
     && apt-get install --yes --no-install-recommends ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
