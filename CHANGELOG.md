@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.11.1](https://github.com/ZeitOnline/kustomize/compare/2.11.0...2.11.1) (2026-11-25)
+
+
+### Bug Fixes
+
+* **barbacane:** Barbacane 0.12.5 in kustomize-barbacane 0.12.5-1 ([#80](https://github.com/ZeitOnline/kustomize/issues/80)) ([2040f06](https://github.com/ZeitOnline/kustomize/commit/2040f060ade4a4af0e5c6a1777d92b551bd42e54))
+* **db-upgrade:** revoke write access on the configured source database ([#79](https://github.com/ZeitOnline/kustomize/issues/79)) ([5293b8c](https://github.com/ZeitOnline/kustomize/commit/5293b8c4909e954a2540f6ac32d09712118b98f4))
+
 ## [2.11.0](https://github.com/ZeitOnline/kustomize/compare/2.10.2...2.11.0) (2026-11-20)
 
 
