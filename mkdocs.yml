@@ -17,6 +17,8 @@ nav:
   - pg-services: components/pg-services/README.md
   - postgrest: components/postgrest/README.md
   - security-config: components/security-config/README.md
+  - testrunner: components/testrunner/README.md
+  - wait-for-migrations: components/wait-for-migrations/README.md
 - Images:
   - barbacane: images/barbacane/README.md
 - Skills:
