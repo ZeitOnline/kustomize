@@ -27,7 +27,7 @@ data:
   finish.sh: |
     #!/bin/bash
     set -o errexit -o xtrace
-    psql service=db --echo-all --file /migration/readonly.sql
+    psql $PGCOPYDB_SOURCE_PGURI --echo-all --file /migration/readonly.sql
     pgcopydb stream sentinel set endpos --current
 
   readonly.sql: |
