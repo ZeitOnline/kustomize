@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.2](https://github.com/ZeitOnline/kustomize/compare/2.11.1...2.11.2) (2026-11-26)
+
+
+### Bug Fixes
+
+* **barbacane:** Debian 13.8 in kustomize-barbacane 0.12.5-2 ([#86](https://github.com/ZeitOnline/kustomize/issues/86)) ([abbf2d8](https://github.com/ZeitOnline/kustomize/commit/abbf2d8d58968ad82b98a0912ef5b94503ac4cfb))
+
 ## [2.11.1](https://github.com/ZeitOnline/kustomize/compare/2.11.0...2.11.1) (2026-11-25)
 
 
