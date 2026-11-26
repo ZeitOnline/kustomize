@@ -11,7 +11,7 @@ The [`barbacane-migration`](../../plugins/barbacane-migration/) skill describes 
 **The image.** Barbacane serves a sealed artifact rather than the spec, so the contract is compiled into an image of the project's own and mounted nowhere: the component expects it at `/config/api.bca`. Build it on [our Barbacane image](../../images/barbacane/), which carries the binary and the plugins we use under `/plugins`, matching each other:
 
 ```dockerfile
-FROM europe-west3-docker.pkg.dev/zeitonline-engineering/docker-zon/kustomize-barbacane:0.12.5-1@sha256:… AS barbacane-dist
+FROM europe-west3-docker.pkg.dev/zeitonline-engineering/docker-zon/kustomize-barbacane:0.12.5-2@sha256:… AS barbacane-dist
 
 FROM app AS gateway
 COPY --from=barbacane-dist /barbacane /bin/barbacane
